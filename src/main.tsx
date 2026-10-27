@@ -10,8 +10,14 @@ import '@fontsource/ibm-plex-mono/500.css'
 import './styles/globals.css'
 import './styles/morph.css'
 import './styles/motion.css'
+import './styles/ticket.css'
 import { queryClient } from './lib/queryClient'
+import { initMetaPixel } from './lib/meta'
+import { captureUtm } from './lib/utm'
 import App from './App.tsx'
+
+initMetaPixel()
+captureUtm()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

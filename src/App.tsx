@@ -1,14 +1,17 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { copy } from './lib/copy'
 import { BrandLogo, BrandMark } from './components/BrandLogo'
+import { WhatsAppButton } from './components/WhatsAppButton'
 import { BasketProvider } from './features/basket/BasketProvider'
 import { useBasket } from './features/basket/context'
 import BasketPage from './features/basket/BasketPage'
 import CatalogPage from './features/catalog/CatalogPage'
 import ProductPage from './features/catalog/ProductPage'
-import CheckoutPage from './features/checkout/CheckoutPage'
+import { usePublicConfig, whatsappLink } from './features/config/api'
+
+const CheckoutPage = lazy(() => import('./features/checkout/CheckoutPage'))
 
 const CURRENT_YEAR = new Date().getFullYear()
 
@@ -74,6 +77,7 @@ function Layout({ children }: { children: ReactNode }) {
           <span>© {CURRENT_YEAR} Fox Plast</span>
         </div>
       </footer>
+      <WhatsAppButton />
     </div>
   )
 }
@@ -113,10 +117,19 @@ function About() {
 }
 
 function Contact() {
+  const { data } = usePublicConfig()
+  const link = whatsappLink(data?.whatsappNumber ?? null, 'عايز أستفسر عن شنط الدعاية من Fox Plast')
   return (
     <section>
       <h1 className="text-2xl font-bold mb-4">اتصل بنا</h1>
-      <p className="text-muted-foreground">TODO(client): WhatsApp number, Telegram usernames, factory address.</p>
+      {link ? (
+        <a href={link} target="_blank" rel="noreferrer" className="text-secondary underline underline-offset-4">
+          كلمنا على واتساب
+        </a>
+      ) : (
+        <p className="text-muted-foreground">TODO(client): رقم واتساب المصنع.</p>
+      )}
+      <p className="mt-3 text-muted-foreground">TODO(client): عنوان المصنع، ساعات العمل، وحسابات التواصل.</p>
     </section>
   )
 }
@@ -144,7 +157,14 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/basket" element={<BasketPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route
+              path="/checkout"
+              element={
+                <Suspense fallback={<p className="text-muted-foreground">بنحمّل…</p>}>
+                  <CheckoutPage />
+                </Suspense>
+              }
+            />
           </Routes>
         </Layout>
       </BasketProvider>

@@ -1,0 +1,21 @@
+/* Receipt-tape perforation. Kept in CSS because the mask is not expressible cleanly in utilities. */
+.ticket-shadow {
+  filter: drop-shadow(0 1px 0 rgb(16 27 51 / 0.06)) drop-shadow(0 14px 24px rgb(16 27 51 / 0.18));
+}
+
+.ticket-paper {
+  --tooth: 14px;
+  background: #fff;
+  -webkit-mask:
+    radial-gradient(circle at 50% 0, transparent 6px, #000 6.5px) 0 0 / var(--tooth) var(--tooth)
+      repeat-x,
+    linear-gradient(#000 0 0) 0 var(--tooth) / 100% calc(100% - var(--tooth) * 2) no-repeat,
+    radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) 0 100% / var(--tooth) var(--tooth)
+      repeat-x;
+  mask:
+    radial-gradient(circle at 50% 0, transparent 6px, #000 6.5px) 0 0 / var(--tooth) var(--tooth)
+      repeat-x,
+    linear-gradient(#000 0 0) 0 var(--tooth) / 100% calc(100% - var(--tooth) * 2) no-repeat,
+    radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) 0 100% / var(--tooth) var(--tooth)
+      repeat-x;
+}
