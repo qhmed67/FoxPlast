@@ -197,9 +197,61 @@ Commit `.env.example` with names only. `.env*` stays in `.gitignore`.
   security headers (CSP report-only first, `X-Content-Type-Options`, `Referrer-Policy`).
 - Supabase: migrations via the CLI (`supabase db push`); functions via `supabase functions deploy`;
   set the Telegram webhook once with `secret_token`.
-  - No DB password/CLI session? Run `supabase/migrations/0001_catalog.sql` and then
-    `supabase/seed.sql` in the dashboard SQL editor. The app detects missing tables in dev and
-    falls back to `src/features/catalog/seed.ts`; production shows the error state instead.
+
+### Applying the schema without the CLI
+
+The dashboard SQL editor is enough. Run the files **in order** and re-run is safe
+(every statement is idempotent):
+
+1. `supabase/migrations/0001_catalog.sql`
+2. `supabase/seed.sql` (placeholder catalog — replace in Phase 7)
+3. `supabase/migrations/0002_orders.sql`
+
+Verify from a terminal (publishable key only — these must answer `200 []`, not `404`):
+
+```bash
+for t in orders order_items order_events payment_proofs rate_limits telegram_staff admins; do
+  curl -s -o /dev/null -w "$t %{http_code}\n" \
+    "https://<project-ref>.supabase.co/rest/v1/$t?select=*&limit=1" \
+    -H "apikey: <publishable-key>"
+done
+```
+
+### Deploying the functions
+
+Needs a Supabase access token (`supabase login` once, or `SUPABASE_ACCESS_TOKEN`).
+Never commit it.
+
+```bash
+npx supabase functions deploy create-order telegram-webhook --project-ref <ref>
+```
+
+Function secrets (dashboard → Edge Functions → Secrets, or `supabase secrets set`):
+
+| Secret | Used by | Notes |
+| --- | --- | --- |
+| `TELEGRAM_BOT_TOKEN` | both | from BotFather |
+| `TELEGRAM_STAFF_CHAT_ID` | `create-order` | comma-separated chat ids for new-order messages |
+| `TELEGRAM_WEBHOOK_SECRET` | `telegram-webhook` | 1–256 chars, `A-Z a-z 0-9 _ -` only |
+| `TELEGRAM_STAFF_IDS` | `telegram-webhook` | bootstrap allowlist before `telegram_staff` is seeded |
+| `IP_HASH_SALT` | `create-order` | random string; keeps IP hashes non-reversible |
+| `TURNSTILE_SECRET` | `create-order` | optional; verification is skipped while unset |
+| `ALLOWED_ORIGINS` | both | optional; comma-separated origins, defaults to any in dev |
+
+Register the webhook once (Telegram retries until it gets `200`):
+
+```bash
+curl -s "https://api.telegram.org/bot<token>/setWebhook" \
+  -H 'Content-Type: application/json' \
+  -d '{"url":"https://<ref>.supabase.co/functions/v1/telegram-webhook",
+       "secret_token":"<TELEGRAM_WEBHOOK_SECRET>",
+       "allowed_updates":["callback_query"]}'
+curl -s "https://api.telegram.org/bot<token>/getWebhookInfo"
+```
+
+- No DB password/CLI session? The dashboard path above is the supported fallback. The app
+  detects missing tables in dev and falls back to `src/features/catalog/seed.ts`; production
+  shows the error state instead.
 - Per-product Open Graph tags: a build script writes small static HTML shells for `/p/<slug>`
   from a catalog snapshot, so Facebook/WhatsApp previews work without SSR.
 - Previews: every PR gets a Vercel preview; Playwright runs against it.

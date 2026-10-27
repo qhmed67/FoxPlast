@@ -36,12 +36,12 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 ## Phase 2 — Order flow (no payment yet)
 
 - [x] Basket (localStorage) with min-qty enforcement. (`fox-plast:basket:v1`, `BasketProvider`, `/basket` page; price tiers snapshotted at add time, server recomputes later.)
-- [ ] Migrations: orders, items, events, rate_limits, config; RLS with no anon access.
-- [ ] Edge Function `create-order` (+ `_shared`): zod, Turnstile, rate limit, server-side pricing, idempotency.
-- [ ] Wizard UI (3 steps) with validation and Arabic errors; static ticket v1 (no motion).
-- [ ] Telegram: bot, webhook secret, `notify`, staff allowlist, new-order message.
-- [ ] `wa.me` button (`02` §4); Meta Pixel `Lead` hook behind a config flag.
-- [ ] Tests: happy path, double-submit, below-min-qty, bad phone, rate-limit.
+- [~] Migrations: orders, items, events, rate_limits, config; RLS with no anon access. Written in `0002_orders.sql` (plus `bump_rate_limit` and `apply_order_transition`). **Not applied remotely yet** — REST still answers `404 PGRST205` for all seven tables (checked 2026-10-27). Run it in the dashboard SQL editor; steps in `01` §9.
+- [~] Edge Function `create-order` (+ `_shared`): zod, Turnstile, rate limit, server-side pricing, idempotency. Code complete and `deno check` clean. Not deployed (needs a Supabase access token).
+- [x] Wizard UI (3 steps) with validation and Arabic errors; static ticket v1 (no motion).
+- [~] Telegram: bot, webhook secret, `notify`, staff allowlist, new-order message. `create-order` sends the new-order message; `telegram-webhook` verifies the secret, checks the allowlist, and applies `apply_order_transition` idempotently. Bot creation and secrets are owner-only.
+- [x] `wa.me` button (`02` §4); Meta Pixel `Lead` hook behind a config flag.
+- [~] Tests: happy path, double-submit, below-min-qty, bad phone, rate-limit. UI-side tests pass (bad phone, min-qty, ticket preview). Server-side happy path/rate-limit need the deployed function.
 
 **Done when:** a test order from a phone appears in Telegram within seconds and in the DB with correct server-computed totals.
 
@@ -132,3 +132,4 @@ npm run test:e2e   # Playwright, all three projects
 | D12 | 2026-10-27 | Supabase client: `@supabase/ssr` `createBrowserClient` (browser only), publishable key via `VITE_SUPABASE_PUBLISHABLE_KEY` with `VITE_SUPABASE_ANON_KEY` fallback | Vite SPA (D1) has no server components or cookies middleware, so the Next.js `createServerClient`/middleware parts of the guide do not apply. Publishable/anon keys are public by design; service-role stays in function secrets. `src/lib/supabase.ts` lazily creates one client. |
 | D13 | 2026-10-27 | Basket persists in `localStorage` under `fox-plast:basket:v1`; items are keyed by `slug::color` and snapshot their price tiers | Matches `docs/02` §1. Snapshots keep the basket usable offline; the server recomputes the authoritative total at order time (D6). Schema version in the key allows a safe reset when the item shape changes. |
 | D14 | 2026-10-27 | Branch per feature/phase; `main`/`master` is never pushed directly | The owner merges feature branches, so history stays reviewable and `main` stays deployable. Branch names: `feat/<phase>-<slug>`, `fix/<slug>`. Rule lives in `AGENTS.md` → "Git hygiene and authorship". |
+| D15 | 2026-10-27 | Every status change goes through `apply_order_transition(p_code, p_to, p_actor, p_note)` | One row-locked SQL function validates the transition from `docs/02` §1, appends the `order_events` row, and returns `applied: false` when the target already equals the current status. Telegram double taps, two staff at once, and retries therefore cannot double-apply. Edge Functions have no other write path to `orders.status`. |
