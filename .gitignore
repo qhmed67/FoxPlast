@@ -15,3 +15,10 @@ blob-report/
 
 # Screenshot artifacts (regenerate with `npm run test:e2e`)
 tests/e2e/*.png
+
+# CLI state (project refs, not secrets)
+supabase/.temp/
+.vercel/
+
+# Any local secret file used for deploys
+.secrets.local
