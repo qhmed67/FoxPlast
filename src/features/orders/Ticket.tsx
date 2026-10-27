@@ -16,6 +16,7 @@ type TicketProps = {
   expiresAt?: string | null
   businessHours?: string | null
   trackingUrl?: string | null
+  helpUrl?: string | null
   preview?: boolean
 }
 
@@ -42,11 +43,14 @@ function formatExpiry(value: string | null | undefined): string | null {
   if (!value) return null
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return null
+  // Arabic month + Latin digits reads correctly in an RTL line; forcing dir="ltr"
+  // scrambles the AM/PM marker and the date separators.
   return new Intl.DateTimeFormat('ar-EG', {
     dateStyle: 'medium',
     timeStyle: 'short',
     calendar: 'gregory',
     numberingSystem: 'latn',
+    timeZone: 'Africa/Cairo',
   }).format(date)
 }
 
@@ -60,6 +64,7 @@ export function Ticket({
   expiresAt,
   businessHours,
   trackingUrl,
+  helpUrl,
   preview = false,
 }: TicketProps) {
   const expiry = formatExpiry(expiresAt)
@@ -127,7 +132,17 @@ export function Ticket({
           </h2>
           {paymentMethods.length === 0 ? (
             <p className="mt-2 text-xs text-kraft-700">
-              بيانات التحويل هتظهر هنا بعد تأكيد الطلب.
+              بيانات التحويل هتظهر هنا بعد ما المصنع يضيفها.{' '}
+              {helpUrl && (
+                <a
+                  href={helpUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-secondary underline underline-offset-4"
+                >
+                  كلمنا واتساب
+                </a>
+              )}
             </p>
           ) : (
             <ul className="mt-2 space-y-3">
@@ -163,7 +178,7 @@ export function Ticket({
           <div>
             {expiry && (
               <p>
-                محجوز حتى: <span className="font-mono [unicode-bidi:isolate]" dir="ltr">{expiry}</span>
+                محجوز حتى: <span className="font-mono">{expiry}</span>
               </p>
             )}
             {businessHours && <p>{businessHours}</p>}

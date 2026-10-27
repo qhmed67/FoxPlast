@@ -78,6 +78,9 @@ export default function CheckoutPage() {
   const [order, setOrder] = useState<CreateOrderResponse | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  // One key per order attempt: retries after a timeout must return the same order,
+  // not create a second one (docs/02 §2.3).
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null)
 
   const form = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
@@ -101,6 +104,8 @@ export default function CheckoutPage() {
   function onContact(values: ContactValues) {
     const phone = normalizePhone(values.phone)
     if (!phone) return
+    // A fresh review step is a fresh attempt: a new key.
+    setIdempotencyKey(crypto.randomUUID())
     setContact({
       name: values.name.trim(),
       phone,
@@ -116,10 +121,10 @@ export default function CheckoutPage() {
     setSubmitting(true)
     setSubmitError(null)
     try {
-      if (!supabase) throw new Error('backend-not-configured')
+      if (!supabase || !idempotencyKey) throw new Error('backend-not-configured')
       const { data, error } = await supabase.functions.invoke('create-order', {
         body: {
-          idempotency_key: crypto.randomUUID(),
+          idempotency_key: idempotencyKey,
           customer: contact,
           items: items.map((item) => ({
             slug: item.slug,
@@ -134,6 +139,7 @@ export default function CheckoutPage() {
       if (!data || typeof data.code !== 'string') throw new Error('bad-response')
       setOrder(data as CreateOrderResponse)
       trackLead()
+      setIdempotencyKey(null)
       clear()
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : String(error))
@@ -156,6 +162,7 @@ export default function CheckoutPage() {
           status={order.status}
           expiresAt={order.expiresAt}
           businessHours={config?.businessHours}
+          helpUrl={helpLink}
         />
         <p className="mx-auto mt-4 max-w-[360px] text-center text-xs text-muted-foreground">
           احفظ رقم الطلب. التتبع وصورة التحويل في الخطوة الجاية.
@@ -395,6 +402,7 @@ export default function CheckoutPage() {
               depositPiasters={depositPiasters}
               paymentMethods={config?.paymentMethods ?? []}
               businessHours={config?.businessHours}
+              helpUrl={helpLink}
               preview
             />
           </div>

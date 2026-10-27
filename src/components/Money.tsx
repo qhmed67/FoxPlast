@@ -1,12 +1,13 @@
 import { formatMoney } from '../lib/money'
 
 /**
- * Money is always Western digits + tabular mono, isolated so RTL text around it
- * cannot reorder the number and currency. See DESIGN.md §3.
+ * Money is Western digits + tabular mono. It inherits the RTL base so the number
+ * sits to the right of the "ج.م" suffix, which is how Arabic reads it. Isolated so
+ * surrounding text cannot reorder the pair. See DESIGN.md §3.
  */
 export function Money({ piasters, className = '' }: { piasters: number; className?: string }) {
   return (
-    <span className={`font-mono [unicode-bidi:isolate] ${className}`} dir="ltr">
+    <span className={`font-mono [unicode-bidi:isolate] ${className}`}>
       {formatMoney(piasters)}
     </span>
   )
