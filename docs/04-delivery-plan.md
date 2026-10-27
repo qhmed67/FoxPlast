@@ -24,7 +24,7 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 
 ## Phase 1 — Catalog and static pages
 
-- [~] Supabase project: credentials wired (browser client + `.env.local`, gitignored); migrations for catalog tables + RLS and `seed.sql` written. Remote migrations not applied yet — `supabase db push` needs the project's DB password (owner-only). The app falls back to seed data in dev until then.
+- [~] Supabase project connected; catalog migration + RLS applied remotely (2026-10-27). `seed.sql` not run yet, so the remote catalog is empty; run it in the dashboard SQL editor. The app falls back to seed data in dev until rows exist.
 - [x] `lib/` helpers: money (piasters ↔ "١٢٠ ج.م" Western digits), phone normalizer, Arabic copy (`copy.ts`).
 - [x] Layout: nav, footer.
 - [~] Home (static), catalog with filters, product page with tier table and swatches, portfolio, about/contact, privacy page — scaffolded; catalog/product functional, others are `TODO(client)` shells.
@@ -131,3 +131,4 @@ npm run test:e2e   # Playwright, all three projects
 | D11 | 2026-10-27 | Git convention: squash same-purpose commits, merge feature additions, never push unprompted; owner `qhmed67 <ahmedalmslm74@gmail.com>` is author and co-author | Keeps the commit list clean and attributable. Rule lives in `AGENTS.md` → "Git hygiene and authorship". Remote `https://github.com/qhmed67/FoxPlast`, push only on explicit instruction. |
 | D12 | 2026-10-27 | Supabase client: `@supabase/ssr` `createBrowserClient` (browser only), publishable key via `VITE_SUPABASE_PUBLISHABLE_KEY` with `VITE_SUPABASE_ANON_KEY` fallback | Vite SPA (D1) has no server components or cookies middleware, so the Next.js `createServerClient`/middleware parts of the guide do not apply. Publishable/anon keys are public by design; service-role stays in function secrets. `src/lib/supabase.ts` lazily creates one client. |
 | D13 | 2026-10-27 | Basket persists in `localStorage` under `fox-plast:basket:v1`; items are keyed by `slug::color` and snapshot their price tiers | Matches `docs/02` §1. Snapshots keep the basket usable offline; the server recomputes the authoritative total at order time (D6). Schema version in the key allows a safe reset when the item shape changes. |
+| D14 | 2026-10-27 | Branch per feature/phase; `main`/`master` is never pushed directly | The owner merges feature branches, so history stays reviewable and `main` stays deployable. Branch names: `feat/<phase>-<slug>`, `fix/<slug>`. Rule lives in `AGENTS.md` → "Git hygiene and authorship". |
