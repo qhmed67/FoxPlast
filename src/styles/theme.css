@@ -1,0 +1,42 @@
+/* shadcn-style theme variables mapped from /DESIGN.md §2 (provisional palette). */
+@layer base {
+  :root {
+    --background: #FBF7EF;        /* kraft-50 */
+    --foreground: #101B33;        /* ink-900 */
+    --card: #F3EBDC;              /* kraft-100 */
+    --card-foreground: #101B33;   /* ink-900 */
+    --popover: #F3EBDC;
+    --popover-foreground: #101B33;
+    --primary: #F28A1E;           /* orange-500 */
+    --primary-foreground: #101B33; /* ink-900 (text on orange) */
+    --secondary: #1D3F7B;         /* navy-700 */
+    --secondary-foreground: #FFFFFF;
+    --muted: #E6D8BF;            /* kraft-200 */
+    --muted-foreground: #7A5C2E;  /* kraft-700 */
+    --accent: #FDE9D0;            /* orange-100 */
+    --accent-foreground: #101B33;
+    --destructive: #C62828;       /* red-600 */
+    --destructive-foreground: #FFFFFF;
+    --border: #E6D8BF;            /* kraft-200 */
+    --input: #E6D8BF;
+    --ring: #2F63B5;              /* navy-500 */
+    --radius: 10px;               /* md */
+
+    /* Fox Plast raw tokens (also exposed for direct use) */
+    --ink-900: #101B33;
+    --navy-800: #16305F;
+    --navy-700: #1D3F7B;
+    --navy-500: #2F63B5;
+    --orange-500: #F28A1E;
+    --orange-600: #D9710A;
+    --orange-100: #FDE9D0;
+    --red-600: #C62828;
+    --green-600: #1F7A3E;
+    --teal-500: #25A0C4;
+    --kraft-50: #FBF7EF;
+    --kraft-100: #F3EBDC;
+    --kraft-200: #E6D8BF;
+    --kraft-400: #C9AD7C;
+    --kraft-700: #7A5C2E;
+  }
+}

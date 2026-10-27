@@ -1,0 +1,10 @@
+/* Token bridge: transitions.dev motion tokens -> --vt-* (morph-ui) -> GSAP reads.
+   Single source of truth for durations/eases. Fill values from transitions.dev tokens
+   during Phase 5. GSAP must read via getComputedStyle, never hardcode. */
+:root {
+  --vt-quick: 200ms;
+  --vt-ui: 250ms;
+  --vt-structural: 400ms;
+  --vt-ticket-print: 900ms;
+  --vt-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
