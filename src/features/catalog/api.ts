@@ -59,7 +59,12 @@ async function loadProducts(): Promise<Product[]> {
     throw error
   }
 
-  return ((data ?? []) as unknown as ProductRow[]).map(toProduct)
+  const products = ((data ?? []) as unknown as ProductRow[]).map(toProduct)
+  if (import.meta.env.DEV && products.length === 0) {
+    console.warn('[catalog] remote catalog is empty; using seed data')
+    return seedProducts
+  }
+  return products
 }
 
 async function loadProduct(slug: string): Promise<Product | null> {
@@ -83,7 +88,11 @@ async function loadProduct(slug: string): Promise<Product | null> {
     throw error
   }
 
-  return data ? toProduct(data as unknown as ProductRow) : null
+  if (!data) {
+    if (import.meta.env.DEV) return seedProducts.find((p) => p.slug === slug) ?? null
+    return null
+  }
+  return toProduct(data as unknown as ProductRow)
 }
 
 async function loadCategories(): Promise<Category[]> {
@@ -106,11 +115,11 @@ async function loadCategories(): Promise<Category[]> {
     throw error
   }
 
-  return ((data ?? []) as { slug: string; name_ar: string; sort: number }[]).map((c) => ({
-    slug: c.slug,
-    name: c.name_ar,
-    sort: c.sort,
-  }))
+  const categories = ((data ?? []) as { slug: string; name_ar: string; sort: number }[]).map(
+    (c) => ({ slug: c.slug, name: c.name_ar, sort: c.sort }),
+  )
+  if (import.meta.env.DEV && categories.length === 0) return seedCategories
+  return categories
 }
 
 export function useProducts() {
