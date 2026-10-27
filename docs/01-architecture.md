@@ -255,3 +255,24 @@ curl -s "https://api.telegram.org/bot<token>/getWebhookInfo"
 - Per-product Open Graph tags: a build script writes small static HTML shells for `/p/<slug>`
   from a catalog snapshot, so Facebook/WhatsApp previews work without SSR.
 - Previews: every PR gets a Vercel preview; Playwright runs against it.
+
+### Current deployment (2026-10-27)
+
+| Piece | Where |
+| --- | --- |
+| Frontend | `https://fox-plast.vercel.app` (Vercel project `fox-plast`, Hobby, production branch `feat/phase-2-order-flow`) |
+| Database | Supabase `uuvqaklyhflxuqggdnxd`; `0001`, `seed.sql` and `0002` applied |
+| Functions | `create-order`, `telegram-webhook` (project ref above) |
+| Webhook | `https://uuvqaklyhflxuqggdnxd.supabase.co/functions/v1/telegram-webhook` |
+| Public env | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_ANON_KEY`, `VITE_APP_VERSION` set for production/preview/development |
+| Function secrets | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `IP_HASH_SALT`, `ALLOWED_ORIGINS` |
+
+Still unset on purpose: `TELEGRAM_STAFF_CHAT_ID`, `TELEGRAM_STAFF_IDS` (need the owner's chat id),
+`TURNSTILE_SECRET` / `VITE_TURNSTILE_SITE_KEY` (no Cloudflare account). `app_config` still has
+placeholder `whatsapp_number` and no `payment_methods`; replace both in Phase 7.
+
+To finish Telegram: the owner sends `/start` to `@FoxPlastbot`, then read the id with
+`getUpdates` and set both secrets to that chat id (a private chat id equals the user id).
+
+Rotate every token that was pasted into chat once handover is done. Nothing secret is stored in
+the repo; `VITE_*` values are public by definition.

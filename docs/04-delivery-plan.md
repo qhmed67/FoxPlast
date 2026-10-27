@@ -36,12 +36,13 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 ## Phase 2 — Order flow (no payment yet)
 
 - [x] Basket (localStorage) with min-qty enforcement. (`fox-plast:basket:v1`, `BasketProvider`, `/basket` page; price tiers snapshotted at add time, server recomputes later.)
-- [~] Migrations: orders, items, events, rate_limits, config; RLS with no anon access. Written in `0002_orders.sql` (plus `bump_rate_limit` and `apply_order_transition`). **Not applied remotely yet** — REST still answers `404 PGRST205` for all seven tables (checked 2026-10-27). Run it in the dashboard SQL editor; steps in `01` §9.
-- [~] Edge Function `create-order` (+ `_shared`): zod, Turnstile, rate limit, server-side pricing, idempotency. Code complete and `deno check` clean. Not deployed (needs a Supabase access token).
-- [x] Wizard UI (3 steps) with validation and Arabic errors; static ticket v1 (no motion).
-- [~] Telegram: bot, webhook secret, `notify`, staff allowlist, new-order message. `create-order` sends the new-order message; `telegram-webhook` verifies the secret, checks the allowlist, and applies `apply_order_transition` idempotently. Bot creation and secrets are owner-only.
+- [x] Migrations: orders, items, events, rate_limits, config; RLS with no anon access. Applied to `uuvqaklyhflxuqggdnxd` on 2026-10-27; all seven tables answer `200 []` and the seed is loaded (4 categories, 5 products, 8 tiers).
+- [x] Edge Function `create-order` (+ `_shared`): zod, Turnstile, rate limit, server-side pricing, idempotency. Deployed; a live 500-piece order returned 60,000 ج.م with an 18,000 ج.م deposit, the same key returned the same order, qty 10 was rejected with `min_qty`, and the 6th request in the window returned `429 rate_limited`.
+- [x] Wizard UI (3 steps) with validation and Arabic errors; static ticket v1 (no motion). Live at `/checkout`; the saved order renders the ticket with Arabic color labels.
+- [~] Telegram: bot, webhook secret, `notify`, staff allowlist, new-order message. `@FoxPlastbot` exists, the webhook is registered with a secret, and both functions are deployed. **Still missing `TELEGRAM_STAFF_CHAT_ID` and `TELEGRAM_STAFF_IDS`** — the owner has not messaged the bot yet, so no chat id exists to notify. Until then `create-order` saves the order and logs a skipped notification.
 - [x] `wa.me` button (`02` §4); Meta Pixel `Lead` hook behind a config flag.
-- [~] Tests: happy path, double-submit, below-min-qty, bad phone, rate-limit. UI-side tests pass (bad phone, min-qty, ticket preview). Server-side happy path/rate-limit need the deployed function.
+- [x] Tests: happy path, double-submit, below-min-qty, bad phone, rate-limit. All verified against the deployed function; the UI retry test proves one idempotency key across attempts.
+- [ ] Turnstile widget and secret (no Cloudflare keys yet). Order creation currently relies on the honeypot plus the 5/hour IP-hash limit.
 
 **Done when:** a test order from a phone appears in Telegram within seconds and in the DB with correct server-computed totals.
 
@@ -133,3 +134,5 @@ npm run test:e2e   # Playwright, all three projects
 | D13 | 2026-10-27 | Basket persists in `localStorage` under `fox-plast:basket:v1`; items are keyed by `slug::color` and snapshot their price tiers | Matches `docs/02` §1. Snapshots keep the basket usable offline; the server recomputes the authoritative total at order time (D6). Schema version in the key allows a safe reset when the item shape changes. |
 | D14 | 2026-10-27 | Branch per feature/phase; `main`/`master` is never pushed directly | The owner merges feature branches, so history stays reviewable and `main` stays deployable. Branch names: `feat/<phase>-<slug>`, `fix/<slug>`. Rule lives in `AGENTS.md` → "Git hygiene and authorship". |
 | D15 | 2026-10-27 | Every status change goes through `apply_order_transition(p_code, p_to, p_actor, p_note)` | One row-locked SQL function validates the transition from `docs/02` §1, appends the `order_events` row, and returns `applied: false` when the target already equals the current status. Telegram double taps, two staff at once, and retries therefore cannot double-apply. Edge Functions have no other write path to `orders.status`. |
+| D16 | 2026-10-27 | Live on Vercel project `fox-plast` (Hobby) at `https://fox-plast.vercel.app`; production branch is `feat/phase-2-order-flow` | The owner supplied the token and asked for a deploy now. Vercel builds from the linked GitHub branch, so `main`/`master` stays untouched. Hobby is non-commercial: revisit the plan (Cloudflare Pages is the zero-budget commercial option) before launch, as recorded in D4/D8. |
+| D17 | 2026-10-27 | Server responses carry the raw color key; Arabic labels are a UI concern | `create-order` stores and returns `variant.color = "yellow"`. `Ticket` maps it through `colorLabel()` so the preview and the saved order share one path. Keeps the API locale-neutral. |
