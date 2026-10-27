@@ -187,3 +187,77 @@ $$;
 
 revoke all on function public.bump_rate_limit(text, timestamptz) from public;
 grant execute on function public.bump_rate_limit(text, timestamptz) to service_role;
+
+-- Single write path for every status change (docs/02 §1). Runs under a row lock,
+-- validates the transition, appends an event, and is idempotent: asking for the
+-- current status returns applied = false instead of writing a duplicate event.
+create or replace function public.apply_order_transition(
+  p_code text,
+  p_to order_status,
+  p_actor text,
+  p_note text default null
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  current_order orders;
+  previous_status order_status;
+  allowed boolean;
+begin
+  select * into current_order from public.orders where code = p_code for update;
+
+  if not found then
+    return jsonb_build_object('ok', false, 'error', 'not_found');
+  end if;
+
+  previous_status := current_order.status;
+
+  if previous_status = p_to then
+    return jsonb_build_object(
+      'ok', true, 'applied', false, 'status', previous_status, 'id', current_order.id
+    );
+  end if;
+
+  allowed := case
+    when previous_status = 'submitted'
+      then p_to in ('quoted', 'awaiting_payment', 'cancelled')
+    when previous_status = 'quoted'
+      then p_to in ('awaiting_payment', 'cancelled')
+    when previous_status = 'awaiting_payment'
+      then p_to in ('proof_uploaded', 'expired', 'cancelled')
+    when previous_status = 'proof_uploaded'
+      then p_to in ('paid', 'awaiting_payment', 'cancelled')
+    when previous_status = 'paid'
+      then p_to in ('in_production', 'cancelled')
+    when previous_status = 'in_production'
+      then p_to in ('ready', 'cancelled')
+    when previous_status = 'ready'
+      then p_to = 'delivered'
+    else false
+  end;
+
+  if not allowed then
+    return jsonb_build_object(
+      'ok', false, 'error', 'invalid_transition', 'status', previous_status
+    );
+  end if;
+
+  update public.orders
+     set status = p_to, updated_at = now()
+   where id = current_order.id;
+
+  insert into public.order_events (order_id, from_status, to_status, actor, note)
+  values (current_order.id, previous_status, p_to, p_actor, p_note);
+
+  return jsonb_build_object(
+    'ok', true, 'applied', true, 'status', p_to, 'previous', previous_status,
+    'id', current_order.id
+  );
+end;
+$$;
+
+revoke all on function public.apply_order_transition(text, order_status, text, text) from public;
+grant execute on function public.apply_order_transition(text, order_status, text, text) to service_role;

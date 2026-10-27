@@ -21,6 +21,40 @@ function money(piasters: number): string {
   return `${(piasters / 100).toLocaleString('en-US')} ج.م`
 }
 
+type TelegramResult<T> = { ok: true; result: T } | { ok: false; description: string }
+
+/** Thin Bot API call. Returns ok:false instead of throwing so callers can answer Telegram. */
+export async function callTelegram<T = unknown>(
+  method: string,
+  payload: Record<string, unknown>,
+): Promise<TelegramResult<T>> {
+  const token = Deno.env.get('TELEGRAM_BOT_TOKEN')
+  if (!token) return { ok: false, description: 'TELEGRAM_BOT_TOKEN missing' }
+
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(5_000),
+    })
+    const body = (await response.json().catch(() => ({}))) as {
+      ok?: boolean
+      result?: T
+      description?: string
+    }
+    if (!response.ok || body.ok !== true) {
+      return { ok: false, description: body.description ?? `HTTP ${response.status}` }
+    }
+    return { ok: true, result: body.result as T }
+  } catch (error) {
+    return {
+      ok: false,
+      description: error instanceof Error ? error.message : 'telegram request failed',
+    }
+  }
+}
+
 /** Sends the new-order message to every configured staff chat. Never throws. */
 export async function notifyNewOrder(order: NotifyOrder): Promise<boolean> {
   const token = Deno.env.get('TELEGRAM_BOT_TOKEN')
