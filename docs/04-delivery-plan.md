@@ -35,7 +35,7 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 
 ## Phase 2 — Order flow (no payment yet)
 
-- [ ] Basket (localStorage) with min-qty enforcement.
+- [x] Basket (localStorage) with min-qty enforcement. (`fox-plast:basket:v1`, `BasketProvider`, `/basket` page; price tiers snapshotted at add time, server recomputes later.)
 - [ ] Migrations: orders, items, events, rate_limits, config; RLS with no anon access.
 - [ ] Edge Function `create-order` (+ `_shared`): zod, Turnstile, rate limit, server-side pricing, idempotency.
 - [ ] Wizard UI (3 steps) with validation and Arabic errors; static ticket v1 (no motion).
@@ -130,3 +130,4 @@ npm run test:e2e   # Playwright, all three projects
 | D10 | 2026-10-27 | Brand extraction partial; palette recorded, status stays provisional | K-means (PIL median-cut, 12 colors) on `logo.png` (fox-mark) and `brand logo and some products.png` (product grid). Extracted: fox-mark greens `#6a8f2d`/`#498d5c`, teal `#16a0c8`, red `#a02a18`, kraft `#eeeadc`; product grid navy `#012957`/`#082648`, teal `#075449`, kraft `#f8e2d2`. Horizontal logo not supplied, so navy/orange tokens remain eye-sampled. Full palette in `DESIGN.md` §12. |
 | D11 | 2026-10-27 | Git convention: squash same-purpose commits, merge feature additions, never push unprompted; owner `qhmed67 <ahmedalmslm74@gmail.com>` is author and co-author | Keeps the commit list clean and attributable. Rule lives in `AGENTS.md` → "Git hygiene and authorship". Remote `https://github.com/qhmed67/FoxPlast`, push only on explicit instruction. |
 | D12 | 2026-10-27 | Supabase client: `@supabase/ssr` `createBrowserClient` (browser only), publishable key via `VITE_SUPABASE_PUBLISHABLE_KEY` with `VITE_SUPABASE_ANON_KEY` fallback | Vite SPA (D1) has no server components or cookies middleware, so the Next.js `createServerClient`/middleware parts of the guide do not apply. Publishable/anon keys are public by design; service-role stays in function secrets. `src/lib/supabase.ts` lazily creates one client. |
+| D13 | 2026-10-27 | Basket persists in `localStorage` under `fox-plast:basket:v1`; items are keyed by `slug::color` and snapshot their price tiers | Matches `docs/02` §1. Snapshots keep the basket usable offline; the server recomputes the authoritative total at order time (D6). Schema version in the key allows a safe reset when the item shape changes. |

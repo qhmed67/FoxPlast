@@ -3,20 +3,7 @@ import { Link } from 'react-router'
 import { copy } from '../../lib/copy'
 import { Money } from '../../components/Money'
 import { useCategories, useProducts } from './api'
-
-const COLORS: Record<string, string> = {
-  yellow: '#E8C547',
-  orange: '#F28A1E',
-  black: '#1a1a1a',
-  red: '#C62828',
-  pink: '#E8A0BF',
-  blue: '#2F63B5',
-  green: '#1F7A3E',
-  white: '#F5F5F5',
-  natural: '#D9C9A3',
-  brown: '#7A5C2E',
-  gray: '#9CA3AF',
-}
+import { COLORS, colorHex, colorLabel } from './colors'
 
 export default function CatalogPage() {
   const [category, setCategory] = useState('all')
@@ -76,10 +63,10 @@ export default function CatalogPage() {
           <button
             key={c}
             onClick={() => setColor(c)}
-            aria-label={c}
+            aria-label={colorLabel(c)}
             aria-pressed={color === c}
             className={`w-8 h-8 rounded-full border-2 ${color === c ? 'border-foreground ring-2 ring-primary' : 'border-border'}`}
-            style={{ backgroundColor: COLORS[c] }}
+            style={{ backgroundColor: colorHex(c) }}
           />
         ))}
       </div>
@@ -131,8 +118,8 @@ export default function CatalogPage() {
                       <span
                         key={c}
                         className="w-4 h-4 rounded-full border border-border"
-                        style={{ backgroundColor: COLORS[c] ?? '#ccc' }}
-                        title={c}
+                        style={{ backgroundColor: colorHex(c) }}
+                        title={colorLabel(c)}
                       />
                     ))}
                   </div>

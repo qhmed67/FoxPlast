@@ -1,29 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { copy } from '../../lib/copy'
 import { Money } from '../../components/Money'
+import { useBasket } from '../basket/context'
 import { useProduct } from './api'
-
-const COLORS: Record<string, string> = {
-  yellow: '#E8C547',
-  orange: '#F28A1E',
-  black: '#1a1a1a',
-  red: '#C62828',
-  pink: '#E8A0BF',
-  blue: '#2F63B5',
-  green: '#1F7A3E',
-  white: '#F5F5F5',
-  natural: '#D9C9A3',
-  brown: '#7A5C2E',
-  gray: '#9CA3AF',
-}
+import { colorHex, colorLabel } from './colors'
 
 export default function ProductPage() {
   const { slug } = useParams()
   const { data: product, isPending, isError, refetch } = useProduct(slug ?? '')
+  const { add } = useBasket()
   const [qty, setQty] = useState<number | null>(null)
   const [qtyText, setQtyText] = useState<string | null>(null)
   const [colorInput, setColorInput] = useState<string | null>(null)
+  const [added, setAdded] = useState(false)
+
+  useEffect(() => {
+    if (!added) return
+    const id = window.setTimeout(() => setAdded(false), 2500)
+    return () => window.clearTimeout(id)
+  }, [added])
 
   if (isPending) {
     return (
@@ -95,10 +91,10 @@ export default function ProductPage() {
                 <button
                   key={c}
                   onClick={() => setColorInput(c)}
-                  aria-label={c}
+                  aria-label={colorLabel(c)}
                   aria-pressed={color === c}
                   className={`w-9 h-9 rounded-full border-2 ${color === c ? 'border-foreground ring-2 ring-primary' : 'border-border'}`}
-                  style={{ backgroundColor: COLORS[c] ?? '#ccc' }}
+                  style={{ backgroundColor: colorHex(c) }}
                 />
               ))}
             </div>
@@ -182,9 +178,33 @@ export default function ProductPage() {
           </div>
         )}
 
-        <button className="mt-4 bg-primary text-primary-foreground px-4 py-3 rounded-md min-h-[48px] w-full">
+        <button
+          onClick={() => {
+            add({
+              slug: product.slug,
+              name: product.name,
+              color: color || null,
+              minQty: product.minQty,
+              qty: quantity,
+              tiers: product.tiers,
+            })
+            setAdded(true)
+          }}
+          className="mt-4 w-full rounded-md bg-primary px-4 py-3 min-h-[48px] text-primary-foreground"
+        >
           {copy.addToBasket}
         </button>
+
+        <div role="status" aria-live="polite" className="mt-2 min-h-6 text-sm">
+          {added && (
+            <span className="flex items-center gap-2">
+              <span>تمت الإضافة للطلب ✓</span>
+              <Link to="/basket" className="text-secondary underline underline-offset-4">
+                شوف الطلب
+              </Link>
+            </span>
+          )}
+        </div>
       </div>
     </section>
   )
