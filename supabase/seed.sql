@@ -49,5 +49,3 @@ on conflict (key) do nothing;
 
 -- Portfolio: placeholder (no images yet)
 -- insert into portfolio_items (...) values (...);
-EOF
-echo "seed.sql written"; wc -l supabase/seed.sql
