@@ -2,8 +2,11 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router'
 import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { copy } from './lib/copy'
+import { BrandLogo, BrandMark } from './components/BrandLogo'
 import CatalogPage from './features/catalog/CatalogPage'
 import ProductPage from './features/catalog/ProductPage'
+
+const CURRENT_YEAR = new Date().getFullYear()
 
 function SeoHead() {
   const { pathname } = useLocation()
@@ -25,21 +28,30 @@ function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SeoHead />
-      <header className="border-b border-border px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="font-bold text-lg" style={{ fontFamily: 'Readex Pro, sans-serif' }}>
-          Fox Plast
-        </Link>
-        <nav className="flex gap-4 text-sm">
-          <Link to="/">{copy.nav.home}</Link>
-          <Link to="/catalog">{copy.nav.catalog}</Link>
-          <Link to="/portfolio">أعمالنا</Link>
-          <Link to="/about">من نحن</Link>
-          <Link to="/contact">اتصل بنا</Link>
-        </nav>
+      <header className="border-b border-border px-4 py-3">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <BrandLogo />
+          <nav
+            aria-label="التنقل الرئيسي"
+            className="flex gap-4 overflow-x-auto text-sm whitespace-nowrap"
+          >
+            <Link to="/">{copy.nav.home}</Link>
+            <Link to="/catalog">{copy.nav.catalog}</Link>
+            <Link to="/portfolio">أعمالنا</Link>
+            <Link to="/about">من نحن</Link>
+            <Link to="/contact">اتصل بنا</Link>
+          </nav>
+        </div>
       </header>
       <main className="max-w-[1200px] mx-auto px-4 py-6">{children}</main>
-      <footer className="border-t border-border px-4 py-6 text-sm text-muted-foreground text-center">
-        © Fox Plast
+      <footer className="border-t border-border px-4 py-6 text-sm text-muted-foreground">
+        <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3">
+          <span className="flex items-center gap-2 text-foreground">
+            <BrandMark size={28} />
+            <span style={{ fontFamily: 'Readex Pro, sans-serif' }}>Fox Plast</span>
+          </span>
+          <span>© {CURRENT_YEAR} Fox Plast</span>
+        </div>
       </footer>
     </div>
   )

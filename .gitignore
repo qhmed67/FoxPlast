@@ -1,3 +1,17 @@
 node_modules/
 dist/
 .DS_Store
+
+# Local env files — only .env.example is committed
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
+# Screenshot artifacts (regenerate with `npm run test:e2e`)
+tests/e2e/*.png

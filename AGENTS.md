@@ -109,6 +109,23 @@ beside the skills. gsap-skills are MIT; impeccable is Apache 2.0. morph-ui: chec
 the upstream repo's license before redistributing anything beyond the copied
 components used in this app.
 
+## Git hygiene and authorship
+
+The commit list is part of the deliverable. Keep it readable.
+
+- **One purpose, one commit.** If you make several commits for the same purpose
+  before handing over, squash them into one. The history should read as a list of
+  features/fixes, not a diary of attempts.
+- **Additions are merge commits.** A follow-up that extends an already-committed
+  feature is added as a merge commit, not squashed into the original. Only
+  unshared commits with the *same* purpose get squashed.
+- **Never push without an explicit instruction.** Commit locally; the owner
+  decides when to push.
+- **Author and co-author.** The owner is the author/editor:
+  `qhmed67 <ahmedalmslm74@gmail.com>`. Every agent commit carries the trailer
+  `Co-authored-by: qhmed67 <ahmedalmslm74@gmail.com>`.
+- **Remote:** `https://github.com/qhmed67/FoxPlast` (do not push yet).
+
 ## Project docs (source of truth)
 
 `docs/README.md` is the index and says which file owns which topic. Read it

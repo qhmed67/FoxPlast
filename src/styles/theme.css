@@ -40,3 +40,56 @@
     --kraft-700: #7A5C2E;
   }
 }
+
+/*
+ * Tailwind v4 utility bridge. Without this block classes like `bg-primary`,
+ * `border-border` or `text-muted-foreground` are never generated — only the raw
+ * CSS variables exist. Keep this in sync with DESIGN.md §2.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Raw brand tokens for direct use (swatches, chips, logo chip). */
+  --color-ink-900: var(--ink-900);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-navy-500: var(--navy-500);
+  --color-orange-500: var(--orange-500);
+  --color-orange-600: var(--orange-600);
+  --color-orange-100: var(--orange-100);
+  --color-red-600: var(--red-600);
+  --color-green-600: var(--green-600);
+  --color-teal-500: var(--teal-500);
+  --color-kraft-50: var(--kraft-50);
+  --color-kraft-100: var(--kraft-100);
+  --color-kraft-200: var(--kraft-200);
+  --color-kraft-400: var(--kraft-400);
+  --color-kraft-700: var(--kraft-700);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 6px);
+  --radius-xl: calc(var(--radius) + 14px);
+
+  --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Readex Pro", "IBM Plex Sans Arabic", sans-serif;
+}
