@@ -24,12 +24,12 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 
 ## Phase 1 — Catalog and static pages
 
-- [ ] Supabase project; migrations for catalog tables + RLS; `seed.sql` with clearly fake placeholder products flagged `TODO(client)`.
-- [ ] `lib/` helpers: money (piasters ↔ "١٢٠ ج.م" as Western digits), phone normalizer, Arabic text utils.
-- [ ] Layout: nav, footer, floating WhatsApp button (link from `app_config`).
-- [ ] Home (static first, no animation), catalog with filters, product page with tier table and swatches, portfolio, about/contact, privacy page.
-- [ ] SEO: titles, descriptions, canonical, JSON-LD (`LocalBusiness`/`Product` where data exists), `sitemap.xml`, `robots.txt`, OG images, build-time static shells for `/p/<slug>`.
-- [ ] Image pipeline: build script producing 480/960/1600 webp with `srcset`; `loading`/`fetchpriority` set correctly; explicit width/height.
+- [~] Supabase project (pending user account); migrations for catalog tables + RLS and `seed.sql` (fake `TODO(client)` data) written locally.
+- [x] `lib/` helpers: money (piasters ↔ "١٢٠ ج.م" Western digits), phone normalizer, Arabic copy (`copy.ts`).
+- [x] Layout: nav, footer.
+- [~] Home (static), catalog with filters, product page with tier table and swatches, portfolio, about/contact, privacy page — scaffolded; catalog/product functional, others are `TODO(client)` shells.
+- [~] SEO: per-route titles, `robots.txt`, `sitemap.xml` done; descriptions/canonical/JSON-LD/OG images/static shells pending.
+- [ ] Image pipeline: build script producing 480/960/1600 webp with `srcset` — not started.
 
 **Done when:** Lighthouse mobile ≥ 90 perf on home/product, all pages render RTL at 360px, no console errors.
 
