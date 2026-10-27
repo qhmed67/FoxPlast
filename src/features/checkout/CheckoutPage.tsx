@@ -96,7 +96,7 @@ export default function CheckoutPage() {
 
   const ticketItems = items.map((item) => ({
     name: item.name,
-    color: item.color ? colorLabel(item.color) : null,
+    color: item.color ?? null,
     qty: item.qty,
     unitPricePiasters: tierFor(item)?.unitPricePiasters ?? 0,
   }))

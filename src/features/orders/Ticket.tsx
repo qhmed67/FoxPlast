@@ -3,6 +3,7 @@ import { BrandMark } from '../../components/BrandLogo'
 import { Money } from '../../components/Money'
 import { copyText } from '../../lib/clipboard'
 import { formatMoney } from '../../lib/money'
+import { colorLabel } from '../catalog/colors'
 import type { PaymentMethod } from '../config/api'
 import type { OrderStatus, TicketItem } from './types'
 
@@ -100,7 +101,7 @@ export function Ticket({
                 </span>
               </div>
               <div className="flex justify-between text-xs text-kraft-700">
-                <span>{item.color ?? ''}</span>
+                <span>{item.color ? colorLabel(item.color) : ''}</span>
                 <Money piasters={item.unitPricePiasters} />
               </div>
             </li>

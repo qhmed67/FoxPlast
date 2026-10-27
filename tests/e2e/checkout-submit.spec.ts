@@ -22,7 +22,7 @@ const TICKET = {
   depositPiasters: 1_800_000,
   expiresAt: new Date(Date.now() + 72 * 3_600_000).toISOString(),
   items: [
-    { name: 'شنطة D-cut صغيرة (نموذج)', color: 'أصفر', qty: 500, unitPricePiasters: 12000 },
+    { name: 'شنطة D-cut صغيرة (نموذج)', color: 'yellow', qty: 500, unitPricePiasters: 12000 },
   ],
 }
 
@@ -70,6 +70,7 @@ test('checkout retries with the same idempotency key after a server error', asyn
   await expect(page.getByRole('heading', { name: 'تم استلام طلبك' })).toBeVisible()
   await expect(page.getByText('FP-ABC234')).toBeVisible()
   await expect(page.getByText('18000 ج.م').first()).toBeVisible()
+  await expect(page.getByText('أصفر')).toBeVisible()
 
   expect(calls).toBe(2)
   expect(keys[0]).toMatch(/^[0-9a-f-]{36}$/)
