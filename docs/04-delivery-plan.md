@@ -15,7 +15,7 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 - [x] Add `src/styles/{globals,theme,morph,motion}.css`; copy `morph.css` unchanged (628 lines); write `theme.css` from `/DESIGN.md` §2 mapping.
 - [x] Self-hosted fonts via `@fontsource`: Readex Pro 600/700, IBM Plex Sans Arabic 400/500/600, IBM Plex Mono 500.
 - [x] `<html lang="ar" dir="rtl">`, base typography, focus ring, reduced-motion base.
-- [ ] **Brand extraction:** BLOCKED — no logos in `public/brand/` (TODO(asset)). `DESIGN.md` stays `status: provisional`. Run k-means + vectorize when the owner drops the PNGs.
+- [x] **Brand extraction (partial):** extracted palettes from `logo.png` (fox-mark) and `brand logo and some products.png` (product grid) via k-means; recorded in `DESIGN.md` §12 and D10. `status` stays `provisional` — horizontal logo (`logo-horizontal.png`) missing, so navy/orange not finalized. Vectorize + knockout variant pending (potrace/vtracer not installed). See TODO(asset).
 - [x] Playwright config: mobile RTL, reduced-motion, desktop projects; smoke test passes in all 3.
 - [x] CI workflow: lint, typecheck, build, e2e on PR.
 - [x] Check current free-tier limits + Vercel commercial clause; recorded as D8/D9.
@@ -127,3 +127,4 @@ npm run test:e2e   # Playwright, all three projects
 | D7 | 2026-10-27 | React 19.3.1 (stable `latest`) | `npm view react dist-tags` → latest 19.3.1; exports `ViewTransition` and `addTransitionType` (verified in the 19.3.1 package). Satisfies morph-ui's React 19.3+ gate. No canary pin needed. |
 | D8 | 2026-10-27 | Hosting: Vercel Hobby is non-commercial (fair-use guidelines: Hobby = personal use only) | Factory site is commercial → cannot use Hobby. Zero-budget options: Cloudflare Pages or Netlify free (verify their commercial terms before committing). Build stays host-agnostic. Decide with owner before launch. |
 | D9 | 2026-10-27 | Free-tier snapshot (re-verify in Phase 0 of later work) | Supabase Free: 500 MB DB, 1 GB storage, 5 GB egress, 50k MAU, paused after 1 week inactivity, 2 active projects, no daily backups. Cloudflare Turnstile: free, up to 20 widgets. Telegram Bot API: 1 msg/sec per chat, 20/min in groups. GitHub Actions minutes apply only to private repos. |
+| D10 | 2026-10-27 | Brand extraction partial; palette recorded, status stays provisional | K-means (PIL median-cut, 12 colors) on `logo.png` (fox-mark) and `brand logo and some products.png` (product grid). Extracted: fox-mark greens `#6a8f2d`/`#498d5c`, teal `#16a0c8`, red `#a02a18`, kraft `#eeeadc`; product grid navy `#012957`/`#082648`, teal `#075449`, kraft `#f8e2d2`. Horizontal logo not supplied, so navy/orange tokens remain eye-sampled. Full palette in `DESIGN.md` §12. |

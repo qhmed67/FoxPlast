@@ -1,35 +1,3 @@
----
-name: Fox Plast
-description: >
-  Eco-friendly promotional bag factory (non-woven cloth, kraft paper, storage bags).
-  Warm kraft-paper surfaces, navy ink, one fox-orange accent. A craft-and-receipt
-  visual language: stitched seams, die-cut handle slots, perforated tickets.
-  Arabic-first, RTL.
-status: provisional  # colors were sampled by eye from the logos; run the extraction step in docs/04 (Phase 0) and update here
-colors:
-  ink-900: "#101B33"      # body text, headings
-  navy-800: "#16305F"     # dark sections
-  navy-700: "#1D3F7B"     # brand navy ("FOX" in the logo)
-  navy-500: "#2F63B5"     # links, focus ring, info
-  orange-500: "#F28A1E"   # brand accent: fills only (primary buttons, highlights)
-  orange-600: "#D9710A"   # accent hover / large display text only
-  orange-100: "#FDE9D0"   # accent wash
-  red-600: "#C62828"      # danger, rejected, "stamp" red
-  green-600: "#1F7A3E"    # success, confirmed, "PAID" stamp
-  teal-500: "#25A0C4"     # info highlights (from the fox-mark gradient)
-  kraft-50: "#FBF7EF"     # page background
-  kraft-100: "#F3EBDC"    # surfaces / cards
-  kraft-200: "#E6D8BF"    # borders, dividers
-  kraft-400: "#C9AD7C"    # stitch lines, decorative
-  kraft-700: "#7A5C2E"    # muted text on kraft
-typography:
-  display: { family: "Readex Pro", weights: [600, 700], lineHeight: 1.3 }
-  body:    { family: "IBM Plex Sans Arabic", weights: [400, 500, 600], lineHeight: 1.7 }
-  mono:    { family: "IBM Plex Mono", weights: [500], use: "order codes, prices on the ticket, phone numbers" }
-rounded: { sm: 6, md: 10, lg: 16, xl: 24, pill: 999 }
-spacing: { base: 4, scale: [4, 8, 12, 16, 24, 32, 48, 72, 112] }
----
-
 # Fox Plast — Design System
 
 > Owner of: visual tokens, type, components, imagery, voice.
@@ -213,3 +181,32 @@ error, success); make the ticket unforgettable.
 **Don't** use gradient text, glassmorphism walls, decorative blobs, stock-photo smiles,
 orange body text, color-only status, placeholder-only labels, or more than one primary
 button per region. Where `impeccable` has its own ban list, that list also applies.
+
+## 12. Extracted palette (Phase 0, 2026-10-27)
+
+K-means (PIL median-cut, 12 colors) on the two supplied images. **`status` stays
+`provisional`**: the horizontal logo (navy "FOX" + orange "PLAST") was not supplied,
+so the brand navy/orange are still the eye-sampled values in §2.
+
+Source files (user-supplied, non-canonical names; see TODO(asset)):
+- `public/brand/logo.png` — 340×340, the fox-mark gradient avatar.
+- `public/brand/brand logo and some products.png` — 1224×1285, product/portfolio grid.
+
+Dominant colors extracted:
+
+| Source | Hex | Share | Closest token |
+| --- | --- | --- | --- |
+| fox-mark | `#6a8f2d` | 15.5% | green (sampled `green-600` #1F7A3E is darker) |
+| fox-mark | `#498d5c` | 13.1% | green |
+| fox-mark | `#16a0c8` | 8.6% | `teal-500` #25A0C4 (extracted is more saturated) |
+| fox-mark | `#a02a18` | 9.8% | `red-600` #C62828 (extracted is darker) |
+| fox-mark | `#eeeadc` / `#d8d8c2` | 18.1% | kraft (`kraft-100`/`kraft-200`) |
+| product grid | `#012957` | 16.7% | `navy-800` #16305F (extracted is darker) |
+| product grid | `#075449` / `#024c4a` | 15.1% | teal (dark) |
+| product grid | `#f8e2d2` / `#fcf0e6` | 17.6% | kraft |
+| product grid | `#8e4238` | 7.3% | warm accent (not in token set) |
+
+**TODO(asset):** `logo-horizontal.png` (navy wordmark + orange PLAST + fox head) is missing —
+needed to finalize navy/orange. Also missing: `poster-storage-bag.png`, `ref-grid-1.png`,
+`ref-grid-2.png`. Vectorize the horizontal logo (potrace/vtracer) for the knockout variant;
+neither tool is installed in this environment.
