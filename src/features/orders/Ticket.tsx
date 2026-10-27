@@ -157,7 +157,18 @@ export function Ticket({
                     <CopyButton value={method.number} label={method.label} />
                   </div>
                   {method.holder && <p className="text-kraft-700">{method.holder}</p>}
-                  {method.note && <p className="text-kraft-700">{method.note}</p>}
+                  {method.note && (/^https?:\/\//.test(method.note) ? (
+                    <a
+                      href={method.note}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-1 inline-block text-secondary underline underline-offset-4"
+                    >
+                      فتح رابط InstaPay
+                    </a>
+                  ) : (
+                    <p className="text-kraft-700">{method.note}</p>
+                  ))}
                 </li>
               ))}
             </ul>
