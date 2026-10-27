@@ -181,7 +181,7 @@ does not pause; `db-backup.yml` dumps the schema and data weekly to a private ar
 
 | Name | Where | Public? |
 | --- | --- | --- |
-| `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (or the new publishable key) | Vercel + `.env.local` | yes |
+| `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` (fallback `VITE_SUPABASE_ANON_KEY`) | Vercel + `.env.local` | yes |
 | `VITE_TURNSTILE_SITE_KEY` | Vercel | yes |
 | `VITE_APP_VERSION` | build-time | yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase function secrets (auto-injected) | **no** |
@@ -197,6 +197,9 @@ Commit `.env.example` with names only. `.env*` stays in `.gitignore`.
   security headers (CSP report-only first, `X-Content-Type-Options`, `Referrer-Policy`).
 - Supabase: migrations via the CLI (`supabase db push`); functions via `supabase functions deploy`;
   set the Telegram webhook once with `secret_token`.
+  - No DB password/CLI session? Run `supabase/migrations/0001_catalog.sql` and then
+    `supabase/seed.sql` in the dashboard SQL editor. The app detects missing tables in dev and
+    falls back to `src/features/catalog/seed.ts`; production shows the error state instead.
 - Per-product Open Graph tags: a build script writes small static HTML shells for `/p/<slug>`
   from a catalog snapshot, so Facebook/WhatsApp previews work without SSR.
 - Previews: every PR gets a Vercel preview; Playwright runs against it.

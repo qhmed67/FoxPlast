@@ -147,6 +147,9 @@ Reduced motion: every motion has a static equivalent.
 - Logos live in `public/brand/` (see `docs/README.md`):
   - horizontal logo (navy "FOX", orange "PLAST", fox head) → nav, footer, ticket header;
   - fox-mark with the gradient → favicon crop + social avatar only;
+  - **Until `logo-horizontal.png` arrives**, nav/footer use the supplied fox-mark on a
+    `kraft-50` chip plus a plain ink wordmark (`src/components/BrandLogo.tsx`, TODO(asset)).
+    Favicons are generated from it: `public/favicon-192.png`, `public/favicon-512.png`.
   - **the navy wordmark disappears on navy** — on dark sections use a white/orange
     knockout variant or place the logo on a kraft-50 chip. Do not redraw or recolor the logo
     by hand; ask the owner for the vector (or vectorize the PNG with potrace/vtracer).
