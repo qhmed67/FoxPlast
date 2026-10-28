@@ -22,8 +22,8 @@ export function WhatsAppButton({ variant = 'classic' }: { variant?: 'classic' | 
 
   const className =
     variant === 'editorial'
-      ? 'fixed bottom-5 end-4 z-40 flex min-h-[48px] items-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-semibold text-[#052e16] shadow-xl'
-      : 'fixed bottom-4 start-4 z-40 flex min-h-[48px] items-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-semibold text-[#052e16] shadow-lg'
+      ? 'whatsapp-float fixed bottom-5 end-4 z-40 flex min-h-[48px] items-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-semibold text-[#052e16] shadow-xl'
+      : 'whatsapp-float fixed bottom-4 start-4 z-40 flex min-h-[48px] items-center gap-2 rounded-full bg-[#25D366] px-4 text-sm font-semibold text-[#052e16] shadow-lg'
 
   return (
     <a href={link} target="_blank" rel="noreferrer" className={className}>
