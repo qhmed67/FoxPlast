@@ -24,3 +24,11 @@ additional_redirect_urls = ["http://localhost:5173"]
 [storage]
 enabled = true
 file_size_limit = "5MiB"
+
+[functions.create-order]
+verify_jwt = true
+
+# Telegram cannot send a Supabase JWT; the webhook secret header is the auth.
+# Keep this false or /start and status buttons return 401.
+[functions.telegram-webhook]
+verify_jwt = false
