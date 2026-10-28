@@ -43,7 +43,7 @@ export function EditorialHeader() {
         </nav>
         <Link
           to="/basket"
-          className="ms-auto flex min-h-10 items-center gap-2 bg-coal px-3 text-xs font-semibold text-bone transition-colors hover:bg-black"
+          className="cart-action ms-auto flex min-h-10 items-center gap-2 border border-coal/25 bg-white px-3 text-xs font-semibold text-coal hover:border-coal hover:bg-[#F1EAE0] hover:shadow-[0_8px_18px_-12px_rgba(13,13,11,0.55)]"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
             <path d="M6 8h12l-1 12H7L6 8Z" />
@@ -51,7 +51,11 @@ export function EditorialHeader() {
           </svg>
           السلة
           {count > 0 && (
-            <span className="min-w-5 bg-bone px-1.5 text-center text-[10px] leading-5 text-coal" dir="ltr">
+            <span
+              key={count}
+              className="cart-count min-w-5 border border-coal/25 bg-white px-1.5 text-center text-[10px] leading-5 text-coal"
+              dir="ltr"
+            >
               {count}
             </span>
           )}

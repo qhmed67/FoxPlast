@@ -56,4 +56,121 @@
   .editorial-underline::after {
     transition: none;
   }
+  .cart-action,
+  .cart-action svg,
+  .cart-count,
+  .whatsapp-float,
+  .whatsapp-float svg {
+    animation: none;
+    transition: none;
+  }
 }
+
+/* --- Cart action: white on the white header, inverts on hover ------------- */
+
+.cart-action {
+  position: relative;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.cart-action:hover {
+  transform: translateY(-1px);
+}
+
+.cart-action:active {
+  transform: translateY(0) scale(0.975);
+}
+
+.cart-action svg {
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cart-action:hover svg {
+  transform: translateY(-1px) rotate(-7deg);
+}
+
+.cart-count {
+  animation: cart-count-pop 280ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+@keyframes cart-count-pop {
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.16);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* --- Floating WhatsApp action: lift + a slow halo ------------------------- */
+
+.whatsapp-float {
+  /* The element itself is `fixed`, which already gives the halo ::after its
+     containing block. Do not set `position` here — unlayered CSS would win
+     over Tailwind's `fixed` utility. */
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.whatsapp-float::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 0 rgb(37 211 102 / 0.55);
+  animation: whatsapp-halo 2.8s ease-out infinite;
+  pointer-events: none;
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 30px -10px rgb(13 13 11 / 0.45);
+}
+
+.whatsapp-float:hover::after {
+  animation-play-state: paused;
+}
+
+.whatsapp-float:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.whatsapp-float svg {
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.whatsapp-float:hover svg {
+  transform: rotate(-10deg) scale(1.12);
+}
+
+@keyframes whatsapp-halo {
+  0% {
+    box-shadow: 0 0 0 0 rgb(37 211 102 / 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgb(37 211 102 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(37 211 102 / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-float::after {
+    animation: none;
+    box-shadow: none;
+  }
+}
+
