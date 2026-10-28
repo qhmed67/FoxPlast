@@ -55,16 +55,26 @@ export async function callTelegram<T = unknown>(
   }
 }
 
-/** Sends the new-order message to every configured staff chat. Never throws. */
-export async function notifyNewOrder(order: NotifyOrder): Promise<boolean> {
+/**
+ * Sends the new-order message to every staff chat. Never throws.
+ * `staffChats` comes from the `telegram_staff` allowlist (filled by /start);
+ * the env var stays as a manual fallback for a chat the bot cannot DM yet.
+ */
+export async function notifyNewOrder(
+  order: NotifyOrder,
+  staffChats: string[] = [],
+): Promise<boolean> {
   const token = Deno.env.get('TELEGRAM_BOT_TOKEN')
-  const chats = (Deno.env.get('TELEGRAM_STAFF_CHAT_ID') ?? '')
-    .split(',')
+  const chats = [
+    ...staffChats,
+    ...(Deno.env.get('TELEGRAM_STAFF_CHAT_ID') ?? '').split(','),
+  ]
     .map((chat) => chat.trim())
     .filter(Boolean)
+  const uniqueChats = [...new Set(chats)]
 
-  if (!token || chats.length === 0) {
-    console.warn('[notify] TELEGRAM_BOT_TOKEN or TELEGRAM_STAFF_CHAT_ID missing; skipped')
+  if (!token || uniqueChats.length === 0) {
+    console.warn('[notify] TELEGRAM_BOT_TOKEN or a staff chat id is missing; skipped')
     return false
   }
 
@@ -86,7 +96,7 @@ export async function notifyNewOrder(order: NotifyOrder): Promise<boolean> {
   const text = lines.join('\n')
 
   const results = await Promise.all(
-    chats.map(async (chatId) => {
+    uniqueChats.map(async (chatId) => {
       try {
         const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
           method: 'POST',

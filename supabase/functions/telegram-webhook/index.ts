@@ -170,7 +170,65 @@ Deno.serve(async (req) => {
   }
 
   const query = update.callback_query
-  if (!query?.data) return json({ ok: true })
+  if (!query?.data) {
+    // Bootstrap: the first /start registers the sender as staff so the owner can
+    // receive new orders and press status buttons. Later /start calls only greet
+    // an already allow-listed account. Security: never register once staff exist.
+    const message = (
+      update as {
+        message?: {
+          chat: { id: number }
+          from?: { id: number; first_name?: string; username?: string }
+          text?: string
+        }
+      }
+    ).message
+
+    if (message?.text?.startsWith('/start')) {
+      const id = message.from?.id ?? message.chat.id
+      const name = message.from?.username || message.from?.first_name || `tg:${id}`
+
+      const { data: existing, error: existingError } = await admin
+        .from('telegram_staff')
+        .select('telegram_user_id,active')
+        .eq('telegram_user_id', id)
+        .maybeSingle()
+
+      if (!existingError && existing?.active) {
+        await callTelegram('sendMessage', {
+          chat_id: message.chat.id,
+          text: 'أهلاً بيك تاني 👋\nحسابك متسجل بالفعل، وهتوصلك الطلبات الجديدة هنا.',
+        })
+        return json({ ok: true })
+      }
+
+      const { count, error: countError } = await admin
+        .from('telegram_staff')
+        .select('*', { count: 'exact', head: true })
+
+      if (!countError && (count ?? 0) === 0) {
+        const { error: insertError } = await admin.from('telegram_staff').insert({
+          telegram_user_id: id,
+          name,
+          role: 'admin',
+          active: true,
+        })
+
+        await callTelegram('sendMessage', {
+          chat_id: message.chat.id,
+          text: insertError
+            ? 'حصل خطأ في التسجيل. جرّب /start تاني بعد شوية.'
+            : '✅ تم تسجيلك كموظف.\nمن دلوقتي أي طلب جديد هيوصلك هنا، وتقدر تأكد الدفع وتغيّر حالة الطلب من الأزرار.',
+        })
+      } else {
+        await callTelegram('sendMessage', {
+          chat_id: message.chat.id,
+          text: 'الحساب ده مش متسجل. كلّم صاحب المصنع عشان يضيفك لفريق العمل.',
+        })
+      }
+    }
+    return json({ ok: true })
+  }
 
   const staff = await isStaff(query.from.id)
   if (!staff.allowed) {

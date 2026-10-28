@@ -320,16 +320,29 @@ Deno.serve(async (req) => {
       note: 'created via create-order',
     })
 
-    await notifyNewOrder({
-      code: order.code,
-      name: body.customer.name,
-      phone: body.customer.phone,
-      governorate: body.customer.governorate,
-      items: priced.map((item) => ({ name: item.name, color: item.color, qty: item.qty })),
-      subtotalPiasters: subtotal,
-      depositPiasters: deposit,
-      createdAt,
-    })
+    const { data: staffRows } = await admin
+      .from('telegram_staff')
+      .select('telegram_user_id')
+      .eq('active', true)
+
+    const staffChats = (staffRows ?? [])
+      .map((row) => row.telegram_user_id)
+      .filter((id): id is number => typeof id === 'number')
+      .map(String)
+
+    await notifyNewOrder(
+      {
+        code: order.code,
+        name: body.customer.name,
+        phone: body.customer.phone,
+        governorate: body.customer.governorate,
+        items: priced.map((item) => ({ name: item.name, color: item.color, qty: item.qty })),
+        subtotalPiasters: subtotal,
+        depositPiasters: deposit,
+        createdAt,
+      },
+      staffChats,
+    )
 
     return json(
       {
