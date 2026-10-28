@@ -96,7 +96,7 @@ Apply in the order from `AGENTS.md`: `impeccable` critique → `make-interfaces-
 
 - [ ] Real content and prices from the client; remove every `TODO(client)` and `TODO(asset)` (grep).
 - [ ] Brand-permission flags set on all portfolio items.
-- [ ] Production env vars, webhook registered, Turnstile production keys.
+- [ ] Production env vars and Turnstile production keys (the Telegram webhook is already registered; see Phase 2).
 - [ ] Keep-alive and backup workflows running; restore test of a backup.
 - [ ] Security pass: RLS review (anon cannot read orders/proofs), secrets scan, CORS, headers.
 - [ ] In-app-browser test (Facebook/Instagram on Android and iOS): forms, upload, copy, share, wa.me.
