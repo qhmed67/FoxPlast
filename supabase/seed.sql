@@ -40,11 +40,16 @@ on conflict (product_id, min_qty) do nothing;
 
 -- Config (public subset)
 insert into app_config (key, value, is_public) values
-  ('whatsapp_number', '"20XXXXXXXXXX"'::jsonb, true),
+  ('whatsapp_number', '"201278954638"'::jsonb, true),
   ('deposit_percent', '30'::jsonb, true),
   ('order_expiry_hours', '72'::jsonb, true),
   ('requires_manual_quote', 'false'::jsonb, true),
-  ('business_hours', '"الأحد–الخميس 9–5"'::jsonb, true)
+  ('business_hours', '"الأحد–الخميس 9–5"'::jsonb, true),
+  (
+    'payment_methods',
+    '[{"label":"InstaPay","number":"ahmedyousseftaha@instapay","note":"https://ipn.eg/S/ahmedyousseftaha/instapay/0xdJfL"}]'::jsonb,
+    true
+  )
 on conflict (key) do nothing;
 
 -- Portfolio: placeholder (no images yet)
