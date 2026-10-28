@@ -5,8 +5,26 @@ export function json(
 ): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', ...extraHeaders },
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      // Order responses include the tracking token; never let a cache keep them.
+      'Cache-Control': 'no-store',
+      ...extraHeaders,
+    },
   })
+}
+
+/** Constant-time string compare for shared secrets (webhook header). */
+export function timingSafeEqual(a: string, b: string): boolean {
+  const aBytes = new TextEncoder().encode(a)
+  const bBytes = new TextEncoder().encode(b)
+  if (aBytes.length !== bBytes.length) return false
+
+  let diff = 0
+  for (let index = 0; index < aBytes.length; index += 1) {
+    diff |= aBytes[index]! ^ bBytes[index]!
+  }
+  return diff === 0
 }
 
 /** Telegram HTML parse mode only allows these entities. */
