@@ -42,7 +42,7 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 - [x] Telegram: bot, webhook secret, `notify`, staff allowlist, new-order message. `@FoxPlastbot` exists, the webhook is registered with a secret, and both functions are deployed. **Deployed 2026-10-28:** `/start` self-registers the first staff member in `telegram_staff`, new orders read recipients from that allowlist, and `telegram-webhook` runs with `verify_jwt = false` (Telegram sends no JWT; the secret header is the auth). The owner must send `/start` once after this deploy.
 - [x] `wa.me` button (`02` §4); Meta Pixel `Lead` hook behind a config flag.
 - [x] Tests: happy path, double-submit, below-min-qty, bad phone, rate-limit. All verified against the deployed function; the UI retry test proves one idempotency key across attempts.
-- [ ] Turnstile widget and secret (no Cloudflare keys yet). Order creation currently relies on the honeypot plus the 5/hour IP-hash limit.
+- [~] Turnstile widget and secret. The client widget is wired to `VITE_TURNSTILE_SITE_KEY` and the Edge Function already verifies `TURNSTILE_SECRET`; both keys are still pending. Until they arrive, order creation relies on the honeypot plus the 5/hour IP-hash limit.
 
 **Done when:** a test order from a phone appears in Telegram within seconds and in the DB with correct server-computed totals.
 
