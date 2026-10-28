@@ -4,12 +4,15 @@ import type { ReactNode } from 'react'
 import { copy } from './lib/copy'
 import { BrandLogo, BrandMark } from './components/BrandLogo'
 import { WhatsAppButton } from './components/WhatsAppButton'
+import { EditorialHeader } from './components/editorial/EditorialHeader'
+import { EditorialFooter } from './components/editorial/EditorialFooter'
 import { BasketProvider } from './features/basket/BasketProvider'
 import { useBasket } from './features/basket/context'
 import BasketPage from './features/basket/BasketPage'
 import CatalogPage from './features/catalog/CatalogPage'
 import ProductPage from './features/catalog/ProductPage'
-import { usePublicConfig, whatsappLink } from './features/config/api'
+import HomePage from './features/home/HomePage'
+import { AboutPage, ContactPage, PortfolioPage, PrivacyPage } from './features/pages/ContentPages'
 
 const CheckoutPage = lazy(() => import('./features/checkout/CheckoutPage'))
 
@@ -33,11 +36,20 @@ function SeoHead() {
   return null
 }
 
-function Layout({ children }: { children: ReactNode }) {
+/**
+ * The order flow keeps the original layout untouched: the approved checkout and
+ * the basket that feeds it must never pick up the editorial redesign.
+ */
+const ORDER_FLOW_PATHS = ['/checkout', '/basket']
+
+function isOrderFlow(pathname: string) {
+  return ORDER_FLOW_PATHS.includes(pathname)
+}
+
+function LegacyLayout({ children }: { children: ReactNode }) {
   const { count } = useBasket()
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SeoHead />
       <header className="border-b border-border px-4 py-3">
         <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-3 gap-y-2">
           <BrandLogo />
@@ -82,64 +94,28 @@ function Layout({ children }: { children: ReactNode }) {
   )
 }
 
-function Home() {
+function EditorialLayout({ children }: { children: ReactNode }) {
   return (
-    <section>
-      <h1 className="text-3xl font-bold" style={{ fontFamily: 'Readex Pro, sans-serif' }}>
-        {copy.heroLine}
-      </h1>
-      <p className="mt-2 text-muted-foreground">{copy.secondaryCta}</p>
-      <div className="mt-6">
-        <Link to="/catalog" className="inline-block bg-primary text-primary-foreground px-4 py-3 rounded-md min-h-[48px]">
-          {copy.primaryCta}
-        </Link>
-      </div>
-    </section>
+    <div className="min-h-screen bg-bone text-coal">
+      <EditorialHeader />
+      <main className="pb-16">{children}</main>
+      <EditorialFooter />
+      <WhatsAppButton variant="editorial" />
+    </div>
   )
 }
 
-function Portfolio() {
+function Layout({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation()
   return (
-    <section>
-      <h1 className="text-2xl font-bold mb-4">أعمالنا</h1>
-      <p className="text-muted-foreground">TODO(asset): portfolio gallery — real production photos with per-item approved flag.</p>
-    </section>
-  )
-}
-
-function About() {
-  return (
-    <section>
-      <h1 className="text-2xl font-bold mb-4">من نحن</h1>
-      <p className="text-muted-foreground">TODO(client): factory story, address, working hours, social links.</p>
-    </section>
-  )
-}
-
-function Contact() {
-  const { data } = usePublicConfig()
-  const link = whatsappLink(data?.whatsappNumber ?? null, 'عايز أستفسر عن شنط الدعاية من Fox Plast')
-  return (
-    <section>
-      <h1 className="text-2xl font-bold mb-4">اتصل بنا</h1>
-      {link ? (
-        <a href={link} target="_blank" rel="noreferrer" className="text-secondary underline underline-offset-4">
-          كلمنا على واتساب
-        </a>
+    <>
+      <SeoHead />
+      {isOrderFlow(pathname) ? (
+        <LegacyLayout>{children}</LegacyLayout>
       ) : (
-        <p className="text-muted-foreground">TODO(client): رقم واتساب المصنع.</p>
+        <EditorialLayout>{children}</EditorialLayout>
       )}
-      <p className="mt-3 text-muted-foreground">TODO(client): عنوان المصنع، ساعات العمل، وحسابات التواصل.</p>
-    </section>
-  )
-}
-
-function Privacy() {
-  return (
-    <section>
-      <h1 className="text-2xl font-bold mb-4">سياسة الخصوصية</h1>
-      <p className="text-muted-foreground">TODO(client): privacy page copy.</p>
-    </section>
+    </>
   )
 }
 
@@ -149,13 +125,13 @@ export default function App() {
       <BasketProvider>
         <Layout>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/catalog" element={<CatalogPage />} />
             <Route path="/product/:slug" element={<ProductPage />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/basket" element={<BasketPage />} />
             <Route
               path="/checkout"

@@ -1,0 +1,59 @@
+/* Content-page only styles. Checkout and ticket never import this file's classes. */
+
+.editorial-marquee {
+  display: flex;
+  width: max-content;
+  animation: editorial-marquee 32s linear infinite;
+}
+
+@keyframes editorial-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* RTL: move toward the start edge so the loop reads right-to-left. */
+    transform: translateX(50%);
+  }
+}
+
+.editorial-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1px);
+  background-size: 4px 4px;
+  opacity: 0.5;
+}
+
+.editorial-underline {
+  position: relative;
+}
+
+.editorial-underline::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: inline-start;
+  transition: transform 220ms ease;
+}
+
+.editorial-underline:hover::after,
+.editorial-underline[aria-pressed='true']::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editorial-marquee {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+  }
+  .editorial-underline::after {
+    transition: none;
+  }
+}
