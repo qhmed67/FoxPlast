@@ -92,5 +92,3 @@ create policy app_config_public_read on app_config
 
 -- admins (placeholder; is_admin() defined in a later migration)
 -- Admin write policies are added once admins/is_admin exist. For now, only service role writes.
-EOF
-echo "migration written"; wc -l supabase/migrations/0001_catalog.sql

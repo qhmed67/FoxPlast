@@ -118,12 +118,28 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return json({ error: 'method_not_allowed' }, 405, cors)
   }
-  if (Number(req.headers.get('content-length') ?? '0') > 32_768) {
+  const MAX_BODY_BYTES = 32_768
+  const declaredLength = Number(req.headers.get('content-length') ?? '0')
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
     return json({ error: 'body_too_large' }, 413, cors)
   }
 
   try {
-    const parsed = bodySchema.safeParse(await req.json())
+    // Content-Length is optional (chunked bodies), so enforce the cap on the
+    // actual payload too instead of trusting the header alone.
+    const rawBody = await req.text()
+    if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) {
+      return json({ error: 'body_too_large' }, 413, cors)
+    }
+
+    let payload: unknown
+    try {
+      payload = JSON.parse(rawBody)
+    } catch {
+      return json({ error: 'invalid_input' }, 400, cors)
+    }
+
+    const parsed = bodySchema.safeParse(payload)
     if (!parsed.success) {
       return json(
         {

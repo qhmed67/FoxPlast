@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@^2'
-import { json } from '../_shared/http.ts'
+import { json, timingSafeEqual } from '../_shared/http.ts'
 import { callTelegram } from '../_shared/telegram.ts'
 
 // Staff buttons for the order state machine (docs/02 §1 and §3).
@@ -158,13 +158,30 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
 
   const secret = Deno.env.get('TELEGRAM_WEBHOOK_SECRET')
-  if (!secret || req.headers.get('x-telegram-bot-api-secret-token') !== secret) {
+  const providedSecret = req.headers.get('x-telegram-bot-api-secret-token') ?? ''
+  if (!secret || !timingSafeEqual(providedSecret, secret)) {
     return json({ error: 'unauthorized' }, 401)
+  }
+
+  const MAX_UPDATE_BYTES = 65_536
+  const declaredLength = Number(req.headers.get('content-length') ?? '0')
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_UPDATE_BYTES) {
+    return json({ error: 'body_too_large' }, 413)
+  }
+
+  let rawUpdate: string
+  try {
+    rawUpdate = await req.text()
+  } catch {
+    return json({ ok: true })
+  }
+  if (new TextEncoder().encode(rawUpdate).byteLength > MAX_UPDATE_BYTES) {
+    return json({ error: 'body_too_large' }, 413)
   }
 
   let update: TelegramUpdate
   try {
-    update = (await req.json()) as TelegramUpdate
+    update = JSON.parse(rawUpdate) as TelegramUpdate
   } catch {
     return json({ ok: true })
   }
@@ -198,6 +215,21 @@ Deno.serve(async (req) => {
         await callTelegram('sendMessage', {
           chat_id: message.chat.id,
           text: 'أهلاً بيك تاني 👋\nحسابك متسجل بالفعل، وهتوصلك الطلبات الجديدة هنا.',
+        })
+        return json({ ok: true })
+      }
+
+      // When the bootstrap allowlist is configured, only those ids may
+      // self-register. Without this, the first stranger to message the bot
+      // before the owner would become an admin and receive customer PII.
+      const bootstrapIds = (Deno.env.get('TELEGRAM_STAFF_IDS') ?? '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+      if (bootstrapIds.length > 0 && !bootstrapIds.includes(String(id))) {
+        await callTelegram('sendMessage', {
+          chat_id: message.chat.id,
+          text: 'الحساب ده مش متسجل. كلّم صاحب المصنع عشان يضيفك لفريق العمل.',
         })
         return json({ ok: true })
       }
