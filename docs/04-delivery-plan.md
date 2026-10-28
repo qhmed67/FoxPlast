@@ -39,7 +39,7 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 - [x] Migrations: orders, items, events, rate_limits, config; RLS with no anon access. Applied to `uuvqaklyhflxuqggdnxd` on 2026-10-27; all seven tables answer `200 []` and the seed is loaded (4 categories, 5 products, 8 tiers).
 - [x] Edge Function `create-order` (+ `_shared`): zod, Turnstile, rate limit, server-side pricing, idempotency. Deployed; a live 500-piece order returned 60,000 ج.م with an 18,000 ج.م deposit, the same key returned the same order, qty 10 was rejected with `min_qty`, and the 6th request in the window returned `429 rate_limited`.
 - [x] Wizard UI (3 steps) with validation and Arabic errors; static ticket v1 (no motion). Live at `/checkout`; the saved order renders the ticket with Arabic color labels.
-- [~] Telegram: bot, webhook secret, `notify`, staff allowlist, new-order message. `@FoxPlastbot` exists, the webhook is registered with a secret, and both functions are deployed. **Still missing `TELEGRAM_STAFF_CHAT_ID` and `TELEGRAM_STAFF_IDS`** — the owner has not messaged the bot yet, so no chat id exists to notify. Until then `create-order` saves the order and logs a skipped notification.
+- [x] Telegram: bot, webhook secret, `notify`, staff allowlist, new-order message. `@FoxPlastbot` exists, the webhook is registered with a secret, and both functions are deployed. **Deployed 2026-10-28:** `/start` self-registers the first staff member in `telegram_staff`, new orders read recipients from that allowlist, and `telegram-webhook` runs with `verify_jwt = false` (Telegram sends no JWT; the secret header is the auth). The owner must send `/start` once after this deploy.
 - [x] `wa.me` button (`02` §4); Meta Pixel `Lead` hook behind a config flag.
 - [x] Tests: happy path, double-submit, below-min-qty, bad phone, rate-limit. All verified against the deployed function; the UI retry test proves one idempotency key across attempts.
 - [ ] Turnstile widget and secret (no Cloudflare keys yet). Order creation currently relies on the honeypot plus the 5/hour IP-hash limit.
@@ -48,7 +48,7 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 
 ## Phase 3 — Payment and tracking
 
-- [ ] Payment methods config + ticket payment section (copy buttons, expiry).
+- [x] Payment methods config + ticket payment section (copy buttons, expiry). InstaPay account and deep link come from `app_config` (migration `0003_payment_config.sql`); the ticket renders the link as a stub-style call to action. WhatsApp number `201278954638` is configured.
 - [ ] `get-upload-url`, `attach-proof`, client compression + EXIF strip + sha256.
 - [ ] Telegram photo message + confirm/reject/next-status buttons; edit-in-place; idempotent callbacks.
 - [ ] `track-order` + tracking page; polling while visible.
@@ -136,3 +136,6 @@ npm run test:e2e   # Playwright, all three projects
 | D15 | 2026-10-27 | Every status change goes through `apply_order_transition(p_code, p_to, p_actor, p_note)` | One row-locked SQL function validates the transition from `docs/02` §1, appends the `order_events` row, and returns `applied: false` when the target already equals the current status. Telegram double taps, two staff at once, and retries therefore cannot double-apply. Edge Functions have no other write path to `orders.status`. |
 | D16 | 2026-10-27 | Live on Vercel project `fox-plast` (Hobby) at `https://fox-plast.vercel.app`; production branch is `feat/phase-2-order-flow` | The owner supplied the token and asked for a deploy now. Vercel builds from the linked GitHub branch, so `main`/`master` stays untouched. Hobby is non-commercial: revisit the plan (Cloudflare Pages is the zero-budget commercial option) before launch, as recorded in D4/D8. |
 | D17 | 2026-10-27 | Server responses carry the raw color key; Arabic labels are a UI concern | `create-order` stores and returns `variant.color = "yellow"`. `Ticket` maps it through `colorLabel()` so the preview and the saved order share one path. Keeps the API locale-neutral. |
+| D18 | 2026-10-28 | Branch names use the feature field, never a phase number | The owner asked for `frontend/*`, `backend/*`, `database/*`, `docs/*`, `fix/*`. Phase numbers made branches meaningless once the phase closed. |
+| D19 | 2026-10-28 | `notifyNewOrder` reads recipients from the `telegram_staff` allowlist, with `TELEGRAM_STAFF_CHAT_ID` as fallback | `/start` is the only bootstrap path the owner needs; requiring a manual env var meant a registered bot still sent no new-order messages. |
+| D20 | 2026-10-28 | `telegram-webhook` is deployed with `verify_jwt = false` | Telegram cannot send a Supabase JWT. The `x-telegram-bot-api-secret-token` header, checked against `TELEGRAM_WEBHOOK_SECRET`, is the authentication; `verify_jwt = true` was returning 401 and dropping `/start`. |

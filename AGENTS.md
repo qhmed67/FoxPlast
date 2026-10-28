@@ -119,9 +119,11 @@ The commit list is part of the deliverable. Keep it readable.
 - **Additions are merge commits.** A follow-up that extends an already-committed
   feature is added as a merge commit, not squashed into the original. Only
   unshared commits with the *same* purpose get squashed.
-- **Branch per feature/phase.** Never commit or push directly to `main`/`master`.
-  Work on `feat/<phase>-<slug>` or `fix/<slug>`, push that branch, and let the
-  owner merge it. A local `master` branch may exist, but it is never pushed.
+- **Branch per feature field.** Never commit or push directly to `main`/`master`.
+  Branch names describe the field and the change, never a phase number:
+  `frontend/<slug>`, `backend/<slug>`, `database/<slug>`, `docs/<slug>`, or
+  `fix/<slug>`. Push the branch and let the owner merge it. A local `master`
+  branch may exist, but it is never pushed.
 - **Never push `main`/`master`.** Push only the feature branch, even when the
   owner asks for a push.
 - **Never push without an explicit instruction.** Commit locally; the owner

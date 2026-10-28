@@ -62,6 +62,7 @@ After confirm: the same message is edited to show who confirmed and when, and th
 (`بدء التجهيز` → `جاهز` → `تم التسليم`).
 
 Rules:
+- **Bootstrap:** the first `/start` sent to the bot registers that Telegram account in `telegram_staff` (role `admin`, active). New-order messages go to every active row; `TELEGRAM_STAFF_CHAT_ID` is only a manual fallback. Deploy the function with `verify_jwt = false` — the webhook secret header is the auth.
 - `callback_data` is ≤ 64 bytes: `o:<orderId first 8 chars>:<action>` and the function resolves the full id.
 - Always `answerCallbackQuery`; handle Telegram retries (idempotent).
 - Reject updates from users not in `telegram_staff` and answer with a neutral message.
