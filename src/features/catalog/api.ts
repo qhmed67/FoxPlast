@@ -1,7 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
-import { hasBackend, supabase } from '../../lib/supabase'
 import { seedCategories, seedProducts } from './seed'
 import type { Category, Product } from './types'
+
+/**
+ * The Supabase client is big and only needed once a query actually runs, so it
+ * lives in its own dynamic chunk instead of the initial bundle.
+ */
+async function getClient() {
+  const { supabase } = await import('../../lib/supabase')
+  return supabase
+}
 
 type TierRow = { min_qty: number; unit_price_piasters: number }
 
@@ -39,6 +47,7 @@ function toProduct(row: ProductRow): Product {
 }
 
 async function loadProducts(): Promise<Product[]> {
+  const supabase = await getClient()
   if (!supabase) {
     if (import.meta.env.DEV) return seedProducts
     throw new Error('Supabase is not configured')
@@ -68,6 +77,7 @@ async function loadProducts(): Promise<Product[]> {
 }
 
 async function loadProduct(slug: string): Promise<Product | null> {
+  const supabase = await getClient()
   if (!supabase) {
     if (import.meta.env.DEV) return seedProducts.find((p) => p.slug === slug) ?? null
     throw new Error('Supabase is not configured')
@@ -96,6 +106,7 @@ async function loadProduct(slug: string): Promise<Product | null> {
 }
 
 async function loadCategories(): Promise<Category[]> {
+  const supabase = await getClient()
   if (!supabase) {
     if (import.meta.env.DEV) return seedCategories
     throw new Error('Supabase is not configured')
@@ -139,5 +150,8 @@ export function useCategories() {
 }
 
 export function backendConfigured(): boolean {
-  return hasBackend()
+  return Boolean(
+    import.meta.env.VITE_SUPABASE_URL &&
+      (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY),
+  )
 }

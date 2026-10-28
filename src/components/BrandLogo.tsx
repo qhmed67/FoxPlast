@@ -10,6 +10,7 @@ export function BrandMark({ size = 40 }: { size?: number }) {
       alt=""
       width={size}
       height={size}
+      decoding="async"
       className="rounded-full bg-kraft-50 object-cover ring-1 ring-border"
       style={{ width: size, height: size }}
     />
