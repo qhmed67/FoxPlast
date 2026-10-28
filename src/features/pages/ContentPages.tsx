@@ -95,7 +95,7 @@ export function AboutPage() {
   return (
     <div className="bg-bone text-coal">
       <PageIntro eyebrow="The factory" title="بنصنع الشنطة اللي بتشيل اسمك.">
-        Fox Plast مصنع مصري متخصص في شنط الدعاية والخزين. من اختيار الخامة لحد آخر
+        Fox Plast مصنع في الإسكندرية متخصص في شنط الدعاية والخزين. من اختيار الخامة لحد آخر
         غرزة، الشغل كله تحت سقف واحد.
       </PageIntro>
 
@@ -174,9 +174,9 @@ export function ContactPage() {
               href={link}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 inline-flex min-h-13 items-center gap-3 bg-coal px-7 text-xs font-semibold uppercase tracking-[0.14em] text-bone transition-colors hover:bg-black"
+              className="mt-5 inline-flex min-h-13 items-center gap-3 bg-[#25D366] px-7 text-xs font-semibold uppercase tracking-[0.14em] text-[#052e16] transition-colors hover:bg-[#1fbe5b]"
             >
-              <span className="h-2 w-2 rounded-full bg-[#25D366]" aria-hidden />
+              <span className="h-2 w-2 rounded-full bg-[#052e16]" aria-hidden />
               افتح محادثة واتساب
             </a>
           ) : (
@@ -203,7 +203,8 @@ export function ContactPage() {
           <dl className="mt-4 space-y-4 text-sm">
             <div>
               <dt className="text-xs text-coal/40">الموقع</dt>
-              <dd className="mt-1">TODO(client): عنوان المصنع</dd>
+              <dd className="mt-1">الإسكندرية، مصر</dd>
+              <dd className="mt-1 text-xs text-coal/40">TODO(client): العنوان بالتفصيل</dd>
             </div>
             <div>
               <dt className="text-xs text-coal/40">ساعات العمل</dt>
@@ -212,6 +213,19 @@ export function ContactPage() {
             <div>
               <dt className="text-xs text-coal/40">التوصيل</dt>
               <dd className="mt-1">TODO(client): نطاق التوصيل والمدد</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-coal/40">فيسبوك</dt>
+              <dd className="mt-1">
+                <a
+                  href="https://www.facebook.com/p/Fox-Plast-100076493018855"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-coal underline underline-offset-4"
+                >
+                  Fox Plast | Alexandria ↗
+                </a>
+              </dd>
             </div>
           </dl>
         </div>
