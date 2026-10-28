@@ -33,7 +33,7 @@ export default function HomePage() {
         <div className="relative z-10 mx-auto grid max-w-[1400px] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-20">
           <div className="order-2 lg:order-1">
             <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-bone/45">
-              Fox Plast — Cairo
+              Fox Plast — Alexandria
             </p>
             <h1 className="mt-5 text-[clamp(2.9rem,8vw,6.5rem)] font-bold leading-[0.98] tracking-[-0.03em]">
               شنط بتحمل
@@ -206,7 +206,7 @@ export default function HomePage() {
                 href={quote}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-12 items-center bg-coal px-7 text-xs font-semibold uppercase tracking-[0.14em] text-bone"
+                className="inline-flex min-h-12 items-center gap-2 bg-[#25D366] px-7 text-xs font-semibold uppercase tracking-[0.14em] text-[#052e16]"
               >
                 واتساب
               </a>

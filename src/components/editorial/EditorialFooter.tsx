@@ -19,7 +19,7 @@ export function EditorialFooter() {
             </span>
           </div>
           <p className="mt-4 max-w-[38ch] text-sm leading-7 text-bone/60">
-            شنط دعاية وتخزين من مصنع مصري. خامات قوية، طباعة لوجو، وأسعار جملة حسب الكمية.
+            شنط دعاية وتخزين من مصنع في الإسكندرية. خامات قوية، طباعة لوجو، وأسعار جملة حسب الكمية.
           </p>
         </div>
 
@@ -44,6 +44,16 @@ export function EditorialFooter() {
               ) : (
                 <span>واتساب</span>
               )}
+            </li>
+            <li>
+              <a
+                href="https://www.facebook.com/p/Fox-Plast-100076493018855"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-bone"
+              >
+                فيسبوك ↗
+              </a>
             </li>
             <li><Link to="/privacy" className="hover:text-bone">سياسة الخصوصية</Link></li>
           </ul>

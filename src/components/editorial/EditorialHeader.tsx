@@ -21,7 +21,7 @@ export function EditorialHeader() {
     <header className="sticky top-0 z-30 border-b border-sand bg-bone/95 backdrop-blur">
       <div className="bg-coal text-bone">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-4 py-2 text-[10px] font-medium uppercase tracking-[0.18em]">
-          <span>مصنع شنط دعاية وتخزين — القاهرة</span>
+          <span>مصنع شنط دعاية وتخزين — الإسكندرية</span>
           {quote ? (
             <a href={quote} target="_blank" rel="noreferrer" className="text-bone/80 hover:text-bone">
               اطلب عرض سعر ↗
@@ -43,7 +43,7 @@ export function EditorialHeader() {
         </nav>
         <Link
           to="/basket"
-          className="ms-auto flex min-h-10 items-center gap-2 border border-coal/20 px-3 text-xs font-semibold text-coal transition-colors hover:border-coal"
+          className="ms-auto flex min-h-10 items-center gap-2 bg-coal px-3 text-xs font-semibold text-bone transition-colors hover:bg-black"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
             <path d="M6 8h12l-1 12H7L6 8Z" />
@@ -51,7 +51,7 @@ export function EditorialHeader() {
           </svg>
           السلة
           {count > 0 && (
-            <span className="min-w-4 bg-coal px-1 text-center text-[10px] leading-4 text-bone" dir="ltr">
+            <span className="min-w-5 bg-bone px-1.5 text-center text-[10px] leading-5 text-coal" dir="ltr">
               {count}
             </span>
           )}
