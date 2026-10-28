@@ -78,7 +78,7 @@ export function Ticket({
             <BrandMark size={30} />
             <div>
               <p className="text-sm font-bold leading-tight">Fox Plast</p>
-              <p className="text-[11px] leading-tight text-kraft-700">تذكرة طلب</p>
+              <p className="text-[11px] leading-tight text-kraft-700">🎫 تذكرة طلب</p>
             </div>
           </div>
           <div className="text-end">
@@ -128,9 +128,14 @@ export function Ticket({
         <div className="my-4 border-t border-dashed border-kraft-400" />
 
         <section aria-labelledby="ticket-payment">
-          <h2 id="ticket-payment" className="text-sm font-bold">
-            الدفع
-          </h2>
+          <div className="flex items-center justify-between gap-2">
+            <h2 id="ticket-payment" className="text-sm font-bold">
+              🎟️ الدفع
+            </h2>
+            <span className="rounded-full border border-dashed border-kraft-400 px-2 py-0.5 text-[10px] text-kraft-700">
+              عربون لتأكيد الطلب
+            </span>
+          </div>
           {paymentMethods.length === 0 ? (
             <p className="mt-2 text-xs text-kraft-700">
               بيانات التحويل هتظهر هنا بعد ما المصنع يضيفها.{' '}
@@ -147,30 +152,50 @@ export function Ticket({
             </p>
           ) : (
             <ul className="mt-2 space-y-3">
-              {paymentMethods.map((method) => (
-                <li key={`${method.label}-${method.number}`} className="text-xs">
-                  <p className="font-semibold">{method.label}</p>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <span className="font-mono [unicode-bidi:isolate]" dir="ltr">
-                      {method.number}
-                    </span>
-                    <CopyButton value={method.number} label={method.label} />
-                  </div>
-                  {method.holder && <p className="text-kraft-700">{method.holder}</p>}
-                  {method.note && (/^https?:\/\//.test(method.note) ? (
-                    <a
-                      href={method.note}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-1 inline-block text-secondary underline underline-offset-4"
-                    >
-                      فتح رابط InstaPay
-                    </a>
-                  ) : (
-                    <p className="text-kraft-700">{method.note}</p>
-                  ))}
-                </li>
-              ))}
+              {paymentMethods.map((method) => {
+                const link = method.note && /^https?:\/\//.test(method.note) ? method.note : null
+                return (
+                  <li
+                    key={`${method.label}-${method.number}`}
+                    className="relative rounded-lg border border-dashed border-kraft-400 bg-kraft-50/70 px-3 py-3 text-xs"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="absolute -start-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-white"
+                    />
+                    <span
+                      aria-hidden="true"
+                      className="absolute -end-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-white"
+                    />
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-semibold">{method.label}</p>
+                      <span className="text-[10px] text-kraft-700">تحويل فوري</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-2">
+                      <span
+                        className="truncate font-mono text-sm font-bold [unicode-bidi:isolate]"
+                        dir="ltr"
+                      >
+                        {method.number}
+                      </span>
+                      <CopyButton value={method.number} label={method.label} />
+                    </div>
+                    {method.holder && <p className="mt-1 text-kraft-700">{method.holder}</p>}
+                    {link ? (
+                      <a
+                        href={link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 flex min-h-10 items-center justify-center gap-2 rounded-md bg-secondary px-3 text-xs font-semibold text-secondary-foreground"
+                      >
+                        افتح {method.label} وادفع ↗
+                      </a>
+                    ) : (
+                      method.note && <p className="mt-1 text-kraft-700">{method.note}</p>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           )}
           <div className="mt-3 flex items-center justify-between gap-2 text-xs">
@@ -185,6 +210,15 @@ export function Ticket({
         </section>
 
         <div className="my-4 border-t border-dashed border-kraft-400" />
+
+        <div
+          aria-hidden="true"
+          className="mb-3 h-8 w-full text-ink-900 opacity-70"
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px, currentColor 4px 5px, transparent 5px 9px, currentColor 9px 12px, transparent 12px 14px)',
+          }}
+        />
 
         <div className="flex items-end justify-between gap-3 text-xs text-kraft-700">
           <div>
