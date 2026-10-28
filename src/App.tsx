@@ -67,7 +67,7 @@ function Layout({ children }: { children: ReactNode }) {
           </Link>
         </div>
       </header>
-      <main className="max-w-[1200px] mx-auto px-4 py-6">{children}</main>
+      <main className="mx-auto max-w-[1200px] px-4 py-6 pb-24">{children}</main>
       <footer className="border-t border-border px-4 py-6 text-sm text-muted-foreground">
         <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-3">
           <span className="flex items-center gap-2 text-foreground">
