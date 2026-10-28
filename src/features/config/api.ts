@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../../lib/supabase'
 
 export type PaymentMethod = {
   label: string
@@ -56,6 +55,7 @@ function mapConfig(rows: ConfigRow[]): PublicConfig {
 }
 
 async function loadPublicConfig(): Promise<PublicConfig> {
+  const { supabase } = await import('../../lib/supabase')
   if (!supabase) return configDefaults
 
   const { data, error } = await supabase
