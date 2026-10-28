@@ -38,6 +38,13 @@
     --kraft-200: #E6D8BF;
     --kraft-400: #C9AD7C;
     --kraft-700: #7A5C2E;
+
+    /* Editorial palette for content pages (home/catalog/product). Checkout and
+       ticket keep the kraft/ink tokens above and never use these. */
+    --bone: #F7F3EC;
+    --coal: #0D0D0B;
+    --sand: #E4DAC9;
+    --clay: #C2410C;
   }
 }
 
@@ -83,6 +90,10 @@
   --color-kraft-200: var(--kraft-200);
   --color-kraft-400: var(--kraft-400);
   --color-kraft-700: var(--kraft-700);
+  --color-bone: var(--bone);
+  --color-coal: var(--coal);
+  --color-sand: var(--sand);
+  --color-clay: var(--clay);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: var(--radius);
