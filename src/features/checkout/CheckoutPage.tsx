@@ -17,6 +17,7 @@ import { usePublicConfig, whatsappLink } from '../config/api'
 import { Ticket } from '../orders/Ticket'
 import type { CreateOrderResponse } from '../orders/types'
 import { GOVERNORATES } from './governorates'
+import { TurnstileWidget } from './TurnstileWidget'
 
 const contactSchema = z.object({
   name: z.string().trim().min(2, 'اكتب اسمك بالكامل').max(80, 'الاسم طويل'),
@@ -78,6 +79,9 @@ export default function CheckoutPage() {
   const [order, setOrder] = useState<CreateOrderResponse | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const [turnstileKey, setTurnstileKey] = useState(0)
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined
   // One key per order attempt: retries after a timeout must return the same order,
   // not create a second one (docs/02 §2.3).
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null)
@@ -131,7 +135,7 @@ export default function CheckoutPage() {
             color: item.color,
             qty: item.qty,
           })),
-          turnstile_token: null,
+          turnstile_token: turnstileToken,
           utm: getUtm(),
         },
       })
@@ -143,6 +147,11 @@ export default function CheckoutPage() {
       clear()
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : String(error))
+      // Turnstile tokens are single-use; remount the widget for the retry.
+      if (turnstileSiteKey) {
+        setTurnstileToken(null)
+        setTurnstileKey((value) => value + 1)
+      }
     } finally {
       setSubmitting(false)
     }
@@ -423,6 +432,8 @@ export default function CheckoutPage() {
             </div>
           )}
 
+          <TurnstileWidget key={turnstileKey} siteKey={turnstileSiteKey} onToken={setTurnstileToken} />
+
           <div className="flex gap-3">
             <button
               type="button"
@@ -434,7 +445,7 @@ export default function CheckoutPage() {
             <button
               type="button"
               onClick={() => void submitOrder()}
-              disabled={submitting}
+              disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileToken)}
               className="min-h-[48px] flex-1 rounded-md bg-primary px-4 py-3 text-primary-foreground disabled:opacity-60"
             >
               {submitting ? 'بنرسل…' : 'أكد الطلب'}
