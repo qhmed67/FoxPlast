@@ -53,6 +53,21 @@ Status changes go through `public.admin_set_order_status` (`0003_admin.sql`), wh
 checks `is_admin()`, writes `order_events` with the admin's name, and reuses
 `apply_order_transition` so the UI can never step outside the state machine.
 
+### Security model
+
+- **No self-service admin.** Public signups are disabled at the project level, so
+  nobody can create an account through the anon key. New admins are added in the
+  dashboard and linked with SQL (service role).
+- `admins` has **no insert/update/delete policy**; anon and authenticated roles
+  cannot grant themselves a row. Only `service_role` writes it.
+- Every admin table (`orders`, `order_items`, `payment_proofs`, `order_events`,
+  `telegram_staff`) is `FOR SELECT/UPDATE TO authenticated USING (is_admin())`;
+  anon reads return nothing.
+- `/admin` is `noindex, nofollow`; the site sends a CSP (no inline app scripts),
+  COOP and HSTS. Login is Supabase email+password with a 12-character minimum.
+- The browser only ever uses the publishable key; the service-role key never
+  ships. TOTP is available in Supabase if the owner wants a second factor later.
+
 **Backup plan the owner mentioned** (a separate React admin app that pushes content to the site)
 is supported by design: the admin talks only to Supabase (RLS + `is_admin()`), so the same code can be
 moved to its own app (`apps/admin`) with no backend change. Start inside the same repo to avoid two deploys.
