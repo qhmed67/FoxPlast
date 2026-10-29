@@ -23,5 +23,11 @@ supabase/.temp/
 # Any local secret file used for deploys
 .secrets.local
 
-# Playwright browsers installed locally (no system cache available)
+# Playwright browsers and local tool state (this sandbox has no writable $HOME)
 .pw-browsers/
+.chrome-profile/
+.cli-home/
+.npm-cache/
+serve.log
+keep.log
+dev.log
