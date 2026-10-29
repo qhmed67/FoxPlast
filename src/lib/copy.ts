@@ -9,6 +9,13 @@ export const copy = {
   waiting: 'طلبك وصلنا ✓ — بنراجع الدفع',
   confirmed: 'تم تأكيد الدفع. بدأنا التجهيز',
   error: 'حصلت مشكلة. جرّب تاني، ولو استمرت كلمنا واتساب',
-  nav: { home: 'الرئيسية', catalog: 'المنتجات', portfolio: 'أعمالنا', about: 'من نحن', contact: 'اتصل بنا' },
+  nav: {
+    home: 'الرئيسية',
+    catalog: 'المنتجات',
+    portfolio: 'أعمالنا',
+    about: 'من نحن',
+    contact: 'اتصل بنا',
+    basket: 'السلة',
+  },
   currency: 'ج.م',
 } as const

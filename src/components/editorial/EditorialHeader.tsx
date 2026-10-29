@@ -10,6 +10,10 @@ const NAV = [
   { to: '/portfolio', label: 'أعمالنا' },
   { to: '/about', label: 'من نحن' },
   { to: '/contact', label: 'اتصل بنا' },
+  // The order pages are real destinations too; keeping them here means the
+  // mobile row always shows where the visitor actually is.
+  { to: '/basket', label: copy.nav.basket },
+  { to: '/checkout', label: 'إتمام الطلب' },
 ]
 
 export function EditorialHeader() {
@@ -89,13 +93,14 @@ export function EditorialHeader() {
 
       <nav
         aria-label="أقسام الموقع"
-        className="flex items-center gap-1.5 overflow-x-auto border-t border-sand px-3 py-2 text-[11px] font-medium text-coal/75 [scrollbar-width:none] md:hidden"
+        dir="rtl"
+        className="mobile-nav-row border-t border-sand py-2 text-[11px] font-medium text-coal/75 md:hidden"
       >
         {NAV.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === '/'}
+            end={/^\/[^/]*$/.test(item.to)}
             className={({ isActive }) => `mobile-nav-link ${isActive ? 'is-active' : ''}`}
           >
             {item.label}
