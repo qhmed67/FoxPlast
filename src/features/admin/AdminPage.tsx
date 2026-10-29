@@ -89,13 +89,13 @@ function LoginScreen({
 
         <h1 className="text-center text-lg font-bold">لوحة الإدارة</h1>
         <p className="mt-1 text-center text-xs text-coal/55">
-          ادخل باسم المستخدم وكلمة المرور
+          ادخل ببريدك الإداري وكلمة المرور
         </p>
 
         <div className="mt-7 space-y-4">
           <div>
             <label htmlFor="admin-username" className="mb-1.5 block text-xs font-semibold">
-              اسم المستخدم
+              البريد الإلكتروني أو اسم المستخدم
             </label>
             <input
               id="admin-username"
@@ -107,7 +107,7 @@ function LoginScreen({
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               className="h-12 w-full rounded-none border border-sand bg-bone/40 px-3 text-sm outline-none transition-colors focus:border-coal"
-              placeholder="ahmed"
+              placeholder="you@example.com"
             />
           </div>
 
@@ -143,7 +143,7 @@ function LoginScreen({
         </button>
 
         <p className="mt-5 text-center text-[10px] leading-5 text-coal/45">
-          لو عندك بريد إداري، اكتبه كامل مكان اسم المستخدم.
+          مفيش تسجيل جديد. الدخول للحسابات المضافة من Supabase فقط.
         </p>
         <a
           href="/"
