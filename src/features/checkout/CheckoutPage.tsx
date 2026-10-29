@@ -49,7 +49,7 @@ const STEPS = ['المنتجات', 'بياناتك', 'المراجعة'] as cons
 
 function StepIndicator({ step }: { step: number }) {
   return (
-    <ol className="mb-6 flex items-center gap-2 text-xs" aria-label="خطوات الطلب">
+    <ol className="mb-8 flex items-center gap-2 text-xs" aria-label="خطوات الطلب">
       {STEPS.map((label, index) => {
         const number = index + 1
         const active = step === number
@@ -58,16 +58,30 @@ function StepIndicator({ step }: { step: number }) {
           <li key={label} className="flex flex-1 items-center gap-2">
             <span
               aria-current={active ? 'step' : undefined}
-              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border ${
-                active || done
-                  ? 'border-secondary bg-secondary text-secondary-foreground'
-                  : 'border-border text-muted-foreground'
+              className={`grid h-8 w-8 shrink-0 place-items-center border text-[11px] font-semibold transition-colors ${
+                active
+                  ? 'border-coal bg-coal text-bone'
+                  : done
+                    ? 'border-clay bg-clay text-white'
+                    : 'border-sand bg-white text-coal/45'
               }`}
             >
               {done ? '✓' : number}
             </span>
-            <span className={active ? 'font-semibold' : 'text-muted-foreground'}>{label}</span>
-            {index < STEPS.length - 1 && <span className="h-px flex-1 bg-border" />}
+            <span
+              className={
+                active
+                  ? 'font-semibold text-coal'
+                  : done
+                    ? 'text-coal/70'
+                    : 'text-coal/40'
+              }
+            >
+              {label}
+            </span>
+            {index < STEPS.length - 1 && (
+              <span className={`h-px flex-1 ${done ? 'bg-clay/40' : 'bg-sand'}`} />
+            )}
           </li>
         )
       })}
@@ -163,9 +177,16 @@ export default function CheckoutPage() {
 
   if (order) {
     return (
-      <section>
-        <h1 className="mb-2 text-2xl font-bold">تم استلام طلبك</h1>
-        <p className="mb-6 text-sm text-muted-foreground">{copy.waiting}</p>
+      <section className="mx-auto max-w-[820px] px-4 py-10 sm:px-6 lg:py-14">
+        <header className="mb-7 border-b border-sand pb-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-clay">
+            Order received
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-[-0.02em] sm:text-4xl">
+            تم استلام طلبك
+          </h1>
+          <p className="mt-2 text-sm text-coal/55">{copy.waiting}</p>
+        </header>
         <Ticket
           code={order.code}
           items={order.items}
@@ -177,7 +198,7 @@ export default function CheckoutPage() {
           businessHours={config?.businessHours}
           helpUrl={helpLink}
         />
-        <p className="mx-auto mt-4 max-w-[360px] text-center text-xs text-muted-foreground">
+        <p className="mx-auto mt-5 max-w-[360px] text-center text-xs leading-6 text-coal/45">
           احفظ رقم الطلب. التتبع وصورة التحويل في الخطوة الجاية.
         </p>
       </section>
@@ -186,22 +207,33 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <section>
-        <h1 className="mb-4 text-2xl font-bold">بيانات الطلب</h1>
-        <p className="text-muted-foreground">السلة فاضية. اختار منتج الأول.</p>
-        <Link
-          to="/catalog"
-          className="mt-4 inline-block min-h-[48px] rounded-md bg-primary px-4 py-3 text-primary-foreground"
-        >
-          {copy.nav.catalog}
-        </Link>
+      <section className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:py-16">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-clay">
+          Checkout
+        </p>
+        <h1 className="mt-3 text-3xl font-bold tracking-[-0.02em] sm:text-4xl">بيانات الطلب</h1>
+        <div className="mt-8 border border-sand bg-white p-8 sm:p-12">
+          <p className="text-sm text-coal/55">السلة فاضية. اختار منتج الأول.</p>
+          <Link
+            to="/catalog"
+            className="mt-6 inline-flex min-h-12 items-center bg-coal px-7 text-xs font-semibold uppercase tracking-[0.14em] text-bone transition-colors hover:bg-black"
+          >
+            {copy.nav.catalog}
+          </Link>
+        </div>
       </section>
     )
   }
 
   return (
-    <section>
-      <h1 className="mb-4 text-2xl font-bold">بيانات الطلب</h1>
+    <section className="mx-auto max-w-[820px] px-4 py-10 sm:px-6 lg:py-14">
+      <header className="mb-7">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-clay">
+          Checkout
+        </p>
+        <h1 className="mt-3 text-3xl font-bold tracking-[-0.02em] sm:text-4xl">بيانات الطلب</h1>
+        <p className="mt-2 text-xs text-coal/50">{copy.waiting}</p>
+      </header>
       <StepIndicator step={step} />
 
       {step === 1 && (
@@ -210,29 +242,32 @@ export default function CheckoutPage() {
             {items.map((item) => {
               const key = basketKey(item)
               return (
-                <li key={key} className="rounded-lg border border-border bg-card p-4">
+                <li
+                  key={key}
+                  className="border border-sand bg-white p-5 transition-colors hover:border-coal/25 sm:p-6"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h2 className="font-semibold">{item.name}</h2>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="mt-1 text-xs text-coal/50">
                         {item.color ? `اللون: ${colorLabel(item.color)}` : 'لون واحد'}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => remove(key)}
-                      className="text-sm text-destructive underline underline-offset-4"
+                      className="text-xs font-medium text-clay underline-offset-4 transition-opacity hover:underline"
                     >
                       حذف
                     </button>
                   </div>
-                  <div className="mt-3 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
+                  <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-t border-sand/70 pt-4">
+                    <div className="flex items-center">
                       <button
                         type="button"
                         onClick={() => setQty(key, item.qty - 1)}
                         aria-label="تقليل الكمية"
-                        className="h-11 w-11 rounded-md border border-border"
+                        className="grid h-11 w-11 place-items-center border border-sand bg-bone/40 text-lg transition-colors hover:border-coal active:scale-95"
                       >
                         −
                       </button>
@@ -243,32 +278,36 @@ export default function CheckoutPage() {
                         value={item.qty}
                         onChange={(e) => setQty(key, Number(e.target.value))}
                         aria-label={`كمية ${item.name}`}
-                        className="h-11 w-20 rounded-md border border-border bg-background text-center font-mono"
+                        className="h-11 w-24 border-y border-sand bg-white text-center font-mono text-sm outline-none focus:border-coal"
                         dir="ltr"
                       />
                       <button
                         type="button"
                         onClick={() => setQty(key, item.qty + 1)}
                         aria-label="زيادة الكمية"
-                        className="h-11 w-11 rounded-md border border-border"
+                        className="grid h-11 w-11 place-items-center border border-sand bg-bone/40 text-lg transition-colors hover:border-coal active:scale-95"
                       >
                         +
                       </button>
                     </div>
-                    <Money piasters={itemSubtotal(item)} />
+                    <span className="text-lg font-semibold">
+                      <Money piasters={itemSubtotal(item)} />
+                    </span>
                   </div>
                 </li>
               )
             })}
           </ul>
-          <p className="mt-4 flex items-center justify-between text-lg font-semibold">
-            <span>الإجمالي التقديري</span>
-            <Money piasters={subtotalPiasters} />
-          </p>
+          <div className="mt-5 flex items-center justify-between border border-sand bg-white px-5 py-4">
+            <span className="text-sm text-coal/55">الإجمالي التقديري</span>
+            <span className="text-xl font-bold">
+              <Money piasters={subtotalPiasters} />
+            </span>
+          </div>
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="mt-4 w-full rounded-md bg-primary px-4 py-3 text-primary-foreground min-h-[48px]"
+            className="mt-4 min-h-12 w-full bg-coal px-4 text-xs font-semibold uppercase tracking-[0.14em] text-bone transition-colors hover:bg-black active:scale-[0.99]"
           >
             التالي
           </button>
@@ -286,12 +325,12 @@ export default function CheckoutPage() {
                 id="name"
                 {...form.register('name')}
                 autoComplete="name"
-                className="h-12 w-full rounded-md border border-border bg-background px-3"
+                className="h-12 w-full border border-sand bg-white px-3 text-sm outline-none transition-colors focus:border-coal"
                 aria-invalid={Boolean(form.formState.errors.name)}
                 aria-describedby={form.formState.errors.name ? 'name-error' : undefined}
               />
               {form.formState.errors.name && (
-                <p id="name-error" role="alert" className="mt-1 text-sm text-destructive">
+                <p id="name-error" role="alert" className="mt-1 text-xs font-medium text-clay">
                   {form.formState.errors.name.message}
                 </p>
               )}
@@ -309,12 +348,12 @@ export default function CheckoutPage() {
                 autoComplete="tel"
                 placeholder="01xxxxxxxxx"
                 dir="ltr"
-                className="h-12 w-full rounded-md border border-border bg-background px-3 text-start font-mono"
+                className="h-12 w-full border border-sand bg-white px-3 text-start font-mono text-sm outline-none transition-colors focus:border-coal"
                 aria-invalid={Boolean(form.formState.errors.phone)}
                 aria-describedby={form.formState.errors.phone ? 'phone-error' : undefined}
               />
               {form.formState.errors.phone && (
-                <p id="phone-error" role="alert" className="mt-1 text-sm text-destructive">
+                <p id="phone-error" role="alert" className="mt-1 text-xs font-medium text-clay">
                   {form.formState.errors.phone.message}
                 </p>
               )}
@@ -327,7 +366,7 @@ export default function CheckoutPage() {
               <select
                 id="governorate"
                 {...form.register('governorate')}
-                className="h-12 w-full rounded-md border border-border bg-background px-3"
+                className="h-12 w-full border border-sand bg-white px-3 text-sm outline-none transition-colors focus:border-coal"
                 aria-invalid={Boolean(form.formState.errors.governorate)}
               >
                 <option value="">اختار المحافظة</option>
@@ -338,7 +377,7 @@ export default function CheckoutPage() {
                 ))}
               </select>
               {form.formState.errors.governorate && (
-                <p role="alert" className="mt-1 text-sm text-destructive">
+                <p role="alert" className="mt-1 text-xs font-medium text-clay">
                   {form.formState.errors.governorate.message}
                 </p>
               )}
@@ -347,7 +386,7 @@ export default function CheckoutPage() {
             <div>
               <label htmlFor="address" className="mb-1 block text-sm font-semibold">
                 العنوان{' '}
-                <span className="text-xs font-normal text-muted-foreground">
+                <span className="text-xs font-normal text-coal/45">
                   (الشارع، رقم المبنى، علامة مميزة)
                 </span>
               </label>
@@ -356,10 +395,10 @@ export default function CheckoutPage() {
                 {...form.register('address')}
                 autoComplete="street-address"
                 required
-                className="h-12 w-full rounded-md border border-border bg-background px-3"
+                className="h-12 w-full border border-sand bg-white px-3 text-sm outline-none transition-colors focus:border-coal"
               />
               {form.formState.errors.address && (
-                <p role="alert" className="mt-1 text-sm text-destructive">
+                <p role="alert" className="mt-1 text-xs font-medium text-clay">
                   {form.formState.errors.address.message}
                 </p>
               )}
@@ -367,13 +406,13 @@ export default function CheckoutPage() {
 
             <div>
               <label htmlFor="notes" className="mb-1 block text-sm font-semibold">
-                ملاحظات <span className="text-muted-foreground">(اختياري)</span>
+                ملاحظات <span className="text-coal/45">(اختياري)</span>
               </label>
               <textarea
                 id="notes"
                 {...form.register('notes')}
                 rows={3}
-                className="w-full rounded-md border border-border bg-background px-3 py-2"
+                className="w-full border border-sand bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-coal"
               />
             </div>
 
@@ -384,17 +423,17 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-7 flex gap-3">
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="min-h-[48px] rounded-md border border-secondary px-4 py-3 text-secondary"
+              className="min-h-12 border border-sand bg-white px-5 text-xs font-semibold uppercase tracking-[0.14em] text-coal/70 transition-colors hover:border-coal hover:text-coal active:scale-[0.99]"
             >
               رجوع
             </button>
             <button
               type="submit"
-              className="min-h-[48px] flex-1 rounded-md bg-primary px-4 py-3 text-primary-foreground"
+              className="min-h-12 flex-1 bg-coal px-5 text-xs font-semibold uppercase tracking-[0.14em] text-bone transition-colors hover:bg-black active:scale-[0.99]"
             >
               التالي
             </button>
@@ -404,16 +443,16 @@ export default function CheckoutPage() {
 
       {step === 3 && contact && (
         <div>
-          <div className="rounded-lg border border-border bg-card p-4 text-sm">
+          <div className="border border-sand bg-white p-5 text-sm">
             <p className="font-semibold">{contact.name}</p>
-            <p className="font-mono [unicode-bidi:isolate]" dir="ltr">
+            <p className="mt-1 font-mono text-xs text-coal/70 [unicode-bidi:isolate]" dir="ltr">
               {contact.phone}
             </p>
-            <p className="text-muted-foreground">
+            <p className="mt-1 text-coal/55">
               {contact.governorate}
               {contact.address ? ` — ${contact.address}` : ''}
             </p>
-            {contact.notes && <p className="mt-2 text-muted-foreground">{contact.notes}</p>}
+            {contact.notes && <p className="mt-2 border-s-2 border-clay/60 bg-bone/60 px-3 py-2 text-coal/70">{contact.notes}</p>}
           </div>
 
           <div className="my-6">
@@ -430,14 +469,14 @@ export default function CheckoutPage() {
           </div>
 
           {submitError && (
-            <div className="mb-4 rounded-md border border-destructive/40 bg-card p-3 text-sm" role="alert">
+            <div className="mb-4 border border-clay/40 bg-white p-4 text-sm" role="alert">
               <p>{copy.error}</p>
               {helpLink && (
                 <a
                   href={helpLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-2 inline-block text-secondary underline underline-offset-4"
+                  className="mt-2 inline-block text-clay underline underline-offset-4"
                 >
                   كلمنا واتساب
                 </a>
@@ -447,11 +486,11 @@ export default function CheckoutPage() {
 
           <TurnstileWidget key={turnstileKey} siteKey={turnstileSiteKey} onToken={setTurnstileToken} />
 
-          <div className="flex gap-3">
+          <div className="mt-2 flex gap-3">
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="min-h-[48px] rounded-md border border-secondary px-4 py-3 text-secondary"
+              className="min-h-12 border border-sand bg-white px-5 text-xs font-semibold uppercase tracking-[0.14em] text-coal/70 transition-colors hover:border-coal hover:text-coal active:scale-[0.99]"
             >
               رجوع
             </button>
@@ -459,7 +498,7 @@ export default function CheckoutPage() {
               type="button"
               onClick={() => void submitOrder()}
               disabled={submitting || (Boolean(turnstileSiteKey) && !turnstileToken)}
-              className="min-h-[48px] flex-1 rounded-md bg-primary px-4 py-3 text-primary-foreground disabled:opacity-60"
+              className="min-h-12 flex-1 bg-coal px-5 text-xs font-semibold uppercase tracking-[0.14em] text-bone transition-colors hover:bg-black active:scale-[0.99] disabled:opacity-50"
             >
               {submitting ? 'بنرسل…' : 'أكد الطلب'}
             </button>

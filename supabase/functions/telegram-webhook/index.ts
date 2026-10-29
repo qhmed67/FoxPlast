@@ -121,6 +121,70 @@ async function answer(id: string, text: string): Promise<void> {
   await callTelegram('answerCallbackQuery', { callback_query_id: id, text })
 }
 
+const ACCESS_WINDOW_MS = 10 * 60 * 1000
+const MAX_ACCESS_ATTEMPTS = 5
+
+/**
+ * The gate is a shared team password, not a per-user account. A correct entry
+ * activates the Telegram account in `telegram_staff`; until then the bot never
+ * shows an order, a customer name, or a status button.
+ */
+async function accessAttempts(userId: number): Promise<number> {
+  const since = new Date(Date.now() - ACCESS_WINDOW_MS).toISOString()
+  const { count } = await admin
+    .from('rate_limits')
+    .select('*', { count: 'exact', head: true })
+    .eq('key', `tg-access:${userId}`)
+    .gte('window_start', since)
+  return count ?? 0
+}
+
+async function recordAccessAttempt(userId: number): Promise<void> {
+  await admin.from('rate_limits').insert({
+    key: `tg-access:${userId}`,
+    window_start: new Date().toISOString(),
+    count: 1,
+  })
+}
+
+function passwordPrompt(): string {
+  return [
+    '🔒 <b>Fox Plast — دخول الفريق</b>',
+    '',
+    'البوت ده خاص بفريق المصنع فقط.',
+    'ابعت كلمة سر الفريق هنا عشان تقدر تستقبل الطلبات وتغيّر حالتها.',
+  ].join('\n')
+}
+
+async function activateStaff(input: {
+  id: number
+  chatId: number
+  name: string
+}): Promise<void> {
+  const { data: existing } = await admin
+    .from('telegram_staff')
+    .select('telegram_user_id,role')
+    .eq('telegram_user_id', input.id)
+    .maybeSingle()
+
+  const { error } = await admin.from('telegram_staff').upsert(
+    {
+      telegram_user_id: input.id,
+      name: input.name,
+      role: existing?.role === 'admin' ? 'admin' : 'staff',
+      active: true,
+    },
+    { onConflict: 'telegram_user_id' },
+  )
+
+  await callTelegram('sendMessage', {
+    chat_id: input.chatId,
+    text: error
+      ? 'تم التحقق، لكن حصل خطأ في تسجيل الحساب. جرّب تبعت كلمة السر تاني.'
+      : '✅ <b>تم التحقق بنجاح</b>\n\nمن دلوقتي هتوصلك الطلبات الجديدة هنا، وتقدر تغيّر حالة الطلب من الأزرار.',
+  })
+}
+
 function statusLine(status: OrderStatus, actor: string): string {
   const at = new Intl.DateTimeFormat('ar-EG', {
     dateStyle: 'short',
@@ -188,9 +252,6 @@ Deno.serve(async (req) => {
 
   const query = update.callback_query
   if (!query?.data) {
-    // Bootstrap: the first /start registers the sender as staff so the owner can
-    // receive new orders and press status buttons. Later /start calls only greet
-    // an already allow-listed account. Security: never register once staff exist.
     const message = (
       update as {
         message?: {
@@ -201,64 +262,61 @@ Deno.serve(async (req) => {
       }
     ).message
 
-    if (message?.text?.startsWith('/start')) {
-      const id = message.from?.id ?? message.chat.id
-      const name = message.from?.username || message.from?.first_name || `tg:${id}`
+    if (!message?.from) return json({ ok: true })
 
-      const { data: existing, error: existingError } = await admin
-        .from('telegram_staff')
-        .select('telegram_user_id,active')
-        .eq('telegram_user_id', id)
-        .maybeSingle()
+    const id = message.from.id
+    const chatId = message.chat.id
+    const name = message.from.username || message.from.first_name || `tg:${id}`
+    const text = message.text?.trim() ?? ''
 
-      if (!existingError && existing?.active) {
-        await callTelegram('sendMessage', {
-          chat_id: message.chat.id,
-          text: 'أهلاً بيك تاني 👋\nحسابك متسجل بالفعل، وهتوصلك الطلبات الجديدة هنا.',
-        })
-        return json({ ok: true })
-      }
-
-      // When the bootstrap allowlist is configured, only those ids may
-      // self-register. Without this, the first stranger to message the bot
-      // before the owner would become an admin and receive customer PII.
-      const bootstrapIds = (Deno.env.get('TELEGRAM_STAFF_IDS') ?? '')
-        .split(',')
-        .map((value) => value.trim())
-        .filter(Boolean)
-      if (bootstrapIds.length > 0 && !bootstrapIds.includes(String(id))) {
-        await callTelegram('sendMessage', {
-          chat_id: message.chat.id,
-          text: 'الحساب ده مش متسجل. كلّم صاحب المصنع عشان يضيفك لفريق العمل.',
-        })
-        return json({ ok: true })
-      }
-
-      const { count, error: countError } = await admin
-        .from('telegram_staff')
-        .select('*', { count: 'exact', head: true })
-
-      if (!countError && (count ?? 0) === 0) {
-        const { error: insertError } = await admin.from('telegram_staff').insert({
-          telegram_user_id: id,
-          name,
-          role: 'admin',
-          active: true,
-        })
-
-        await callTelegram('sendMessage', {
-          chat_id: message.chat.id,
-          text: insertError
-            ? 'حصل خطأ في التسجيل. جرّب /start تاني بعد شوية.'
-            : '✅ تم تسجيلك كموظف.\nمن دلوقتي أي طلب جديد هيوصلك هنا، وتقدر تأكد الدفع وتغيّر حالة الطلب من الأزرار.',
-        })
-      } else {
-        await callTelegram('sendMessage', {
-          chat_id: message.chat.id,
-          text: 'الحساب ده مش متسجل. كلّم صاحب المصنع عشان يضيفك لفريق العمل.',
-        })
-      }
+    // /start never reveals anything. It only asks for the team password.
+    if (text.startsWith('/start')) {
+      await callTelegram('sendMessage', {
+        chat_id: chatId,
+        text: passwordPrompt(),
+        parse_mode: 'HTML',
+      })
+      return json({ ok: true })
     }
+
+    // Other commands are ignored so the password is the only way in.
+    if (!text || text.startsWith('/') || text.length > 256) {
+      return json({ ok: true })
+    }
+
+    const expected = Deno.env.get('TELEGRAM_ACCESS_PASSWORD')
+    if (!expected) {
+      console.error('[telegram-webhook] TELEGRAM_ACCESS_PASSWORD is not set')
+      await callTelegram('sendMessage', {
+        chat_id: chatId,
+        text: 'الدخول مقفول مؤقتاً. كلّم صاحب المصنع.',
+      })
+      return json({ ok: true })
+    }
+
+    const attempts = await accessAttempts(id)
+    if (attempts >= MAX_ACCESS_ATTEMPTS) {
+      await callTelegram('sendMessage', {
+        chat_id: chatId,
+        text: '⛔ محاولات كثيرة. استنى ١٠ دقايق وبعدها ابعت /start تاني.',
+      })
+      return json({ ok: true })
+    }
+
+    if (timingSafeEqual(text, expected)) {
+      await admin.from('rate_limits').delete().eq('key', `tg-access:${id}`)
+      await activateStaff({ id, chatId, name })
+      return json({ ok: true })
+    }
+
+    await recordAccessAttempt(id)
+    const left = MAX_ACCESS_ATTEMPTS - attempts - 1
+    await callTelegram('sendMessage', {
+      chat_id: chatId,
+      text: left > 0
+        ? `❌ كلمة السر غلط. فاضل ${left} محاولات.`
+        : '⛔ خلصت المحاولات. استنى ١٠ دقايق وبعدها ابعت /start تاني.',
+    })
     return json({ ok: true })
   }
 

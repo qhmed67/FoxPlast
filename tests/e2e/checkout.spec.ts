@@ -26,12 +26,12 @@ test('checkout validates contact data and previews the ticket', async ({ page },
   await page.getByRole('button', { name: 'التالي' }).click()
 
   await page.getByLabel('الاسم').fill('أحمد')
-  await page.getByLabel('الموبايل').fill('123')
+  await page.locator('#phone').fill('123')
   await page.getByLabel('المحافظة').selectOption('القاهرة')
   await page.getByRole('button', { name: 'التالي' }).click()
   await expect(page.getByText('اكتب رقم موبايل مصري صحيح')).toBeVisible()
 
-  await page.getByLabel('الموبايل').fill('+20 100 123 4567')
+  await page.locator('#phone').fill('+20 100 123 4567')
   await page.getByRole('button', { name: 'التالي' }).click()
   await expect(page.getByText('اكتب العنوان بالتفصيل')).toBeVisible()
 

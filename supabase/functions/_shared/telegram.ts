@@ -22,6 +22,18 @@ function money(piasters: number): string {
   return `${(piasters / 100).toLocaleString('en-US')} ج.م`
 }
 
+function orderTime(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('ar-EG', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    calendar: 'gregory',
+    numberingSystem: 'latn',
+    timeZone: 'Africa/Cairo',
+  }).format(date)
+}
+
 /** Egyptian mobile (01xxxxxxxxx) → international digits for wa.me. */
 function whatsappNumber(phone: string): string {
   const digits = phone.replace(/\D/g, '')
@@ -64,8 +76,11 @@ export async function callTelegram<T = unknown>(
 
 /**
  * Sends the new-order message to every staff chat. Never throws.
- * `staffChats` comes from the `telegram_staff` allowlist (filled by /start);
- * the env var stays as a manual fallback for a chat the bot cannot DM yet.
+ * `staffChats` comes from the `telegram_staff` allowlist; the env var stays as
+ * a manual fallback for a chat the bot cannot DM yet.
+ *
+ * The card is deliberately compact: customer first, then the order, then money.
+ * Times are formatted in Cairo local time — never a raw ISO string.
  */
 export async function notifyNewOrder(
   order: NotifyOrder,
@@ -85,21 +100,33 @@ export async function notifyNewOrder(
     return false
   }
 
-  const lines = [
-    `🧾 طلب جديد  <b>${escapeHtml(order.code)}</b>`,
-    `👤 ${escapeHtml(order.name)} — <code>${escapeHtml(order.phone)}</code>`,
-    `📍 ${escapeHtml(order.governorate)}`,
-    `🏠 ${escapeHtml(order.address)}`,
-    '────────────',
-    ...order.items.map(
+  const when = orderTime(order.createdAt)
+  const items = order.items
+    .map(
       (item) =>
-        `${item.qty} × ${escapeHtml(item.name)}${item.color ? ` (${escapeHtml(item.color)})` : ''}`,
-    ),
-    '────────────',
-    `الإجمالي: <b>${money(order.subtotalPiasters)}</b>`,
-    `العربون المطلوب: <b>${money(order.depositPiasters)}</b>`,
-    `🕒 ${escapeHtml(order.createdAt)}`,
-  ]
+        `• <b>${item.qty}×</b> ${escapeHtml(item.name)}${
+          item.color ? ` (${escapeHtml(item.color)})` : ''
+        }`,
+    )
+    .join('\n')
+
+  const lines = [
+    '🧾 <b>طلب جديد</b>',
+    `<code>${escapeHtml(order.code)}</code>`,
+    '',
+    '👤 <b>العميل</b>',
+    escapeHtml(order.name),
+    `<code>${escapeHtml(order.phone)}</code>`,
+    `📍 ${escapeHtml(order.governorate)}`,
+    `<blockquote>🏠 ${escapeHtml(order.address)}</blockquote>`,
+    '',
+    '📦 <b>الأصناف</b>',
+    items,
+    '',
+    `الإجمالي  <b>${money(order.subtotalPiasters)}</b>`,
+    `العربون المطلوب  <b>${money(order.depositPiasters)}</b>`,
+    when ? `\n🕒 ${escapeHtml(when)}` : '',
+  ].filter((line) => line !== '')
 
   const text = lines.join('\n')
 
@@ -122,6 +149,12 @@ export async function notifyNewOrder(
                     url: `https://wa.me/${whatsappNumber(order.phone)}?text=${encodeURIComponent(
                       `مرحباً ${order.name}، بخصوص طلبك ${order.code} من Fox Plast — عايزين نأكد الدفع والعنوان.`,
                     )}`,
+                  },
+                ],
+                [
+                  {
+                    text: '🦊 لوحة الإدارة',
+                    url: 'https://fox-plast.vercel.app/admin',
                   },
                 ],
               ],

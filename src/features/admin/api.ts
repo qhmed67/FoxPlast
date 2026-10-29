@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase'
-import type { AdminOrder, OrderStatus } from './types'
+import { STATUS_LABELS, type AdminOrder, type OrderStatus } from './types'
 
 const ORDER_COLUMNS = [
   'id',
@@ -84,3 +84,48 @@ export function whatsappUrl(phone: string, text: string): string {
   const international = digits.startsWith('20') ? digits : `20${digits.replace(/^0/, '')}`
   return `https://wa.me/${international}?text=${encodeURIComponent(text)}`
 }
+
+const STATUS_NEXT_STEP: Record<OrderStatus, string> = {
+  submitted: 'بنراجع الطلب وهنرد عليك في أقرب وقت.',
+  quoted: 'عرض السعر جاهز. راجع التفاصيل وابعتلنا لو محتاج تعديل.',
+  awaiting_payment: 'محتاجين تأكيد العربون عشان نبدأ التجهيز.',
+  proof_uploaded: 'استلمنا إيصال الدفع وبنراجعه حالياً.',
+  paid: 'تم تأكيد الدفع بنجاح. طلبك داخل قائمة التجهيز.',
+  in_production: 'طلبك بيتجهّز حالياً، وهنبلغك أول ما يخلص.',
+  ready: 'طلبك جاهز للاستلام أو الشحن. كلّمنا عشان ننسّق التسليم.',
+  delivered: 'تم تسليم الطلب. شكراً لتعاملك مع Fox Plast.',
+  cancelled: 'تم إلغاء الطلب. لو البناء ده مش مقصود، كلّمنا فوراً.',
+  expired: 'انتهت مدة حجز الطلب. ابعتلنا عشان نعمل طلب جديد.',
+}
+
+/**
+ * A ready-to-send WhatsApp message for the customer. Keeping it in one place
+ * means the admin button and any future automation always say the same thing.
+ */
+export function orderStatusMessage(
+  order: Pick<AdminOrder, 'code' | 'customer_name' | 'status' | 'order_items' | 'subtotal_piasters' | 'deposit_piasters'>,
+  status: OrderStatus = order.status,
+): string {
+  const items = (order.order_items ?? [])
+    .map((item) => `• ${item.qty}× ${item.product_name}${item.variant?.color ? ` (${item.variant.color})` : ''}`)
+    .join('\n')
+  const money = (piasters: number) => `${(piasters / 100).toLocaleString('en-US')} ج.م`
+
+  return [
+    `مرحباً ${order.customer_name} 👋`,
+    '',
+    `بخصوص طلبك *${order.code}* من Fox Plast:`,
+    `الحالة الحالية: *${STATUS_LABELS[status]}*`,
+    STATUS_NEXT_STEP[status],
+    '',
+    items ? `*تفاصيل الطلب*\n${items}` : '',
+    `الإجمالي: ${money(order.subtotal_piasters)}`,
+    `العربون: ${money(order.deposit_piasters)}`,
+    '',
+    'لو عندك أي استفسار، رد على الرسالة دي وهنساعدك.',
+    '— Fox Plast',
+  ]
+    .join('\n')
+    .trim()
+}
+
