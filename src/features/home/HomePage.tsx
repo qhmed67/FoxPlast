@@ -63,13 +63,13 @@ export default function HomePage() {
           <div className="order-1 lg:order-2">
             <div className="relative overflow-hidden bg-[#DCD3C4]">
               <img
-                src="/products/storage-hero.jpg"
-                alt="شنطة خزين خضراء من Fox Plast"
+                src="/products/hero-print.jpg"
+                alt="شنط دعاية مطبوعة بشعارات براندات من Fox Plast"
                 className="aspect-[4/3] w-full object-cover lg:aspect-[5/4]"
                 fetchPriority="high"
               />
               <span className="absolute bottom-4 start-4 bg-bone px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-coal">
-                70 × 60 × 20 سم
+                شنط دعاية مطبوعة
               </span>
             </div>
           </div>
