@@ -15,6 +15,7 @@ import HomePage from './features/home/HomePage'
 import { AboutPage, ContactPage, PortfolioPage, PrivacyPage } from './features/pages/ContentPages'
 
 const CheckoutPage = lazy(() => import('./features/checkout/CheckoutPage'))
+const AdminPage = lazy(() => import('./features/admin/AdminPage'))
 
 const CURRENT_YEAR = new Date().getFullYear()
 
@@ -30,6 +31,7 @@ function SeoHead() {
       '/privacy': 'سياسة الخصوصية — Fox Plast',
       '/basket': 'الطلب — Fox Plast',
       '/checkout': 'بيانات الطلب — Fox Plast',
+      '/admin': 'الإدارة — Fox Plast',
     }
     document.title = titles[pathname] ?? 'Fox Plast'
   }, [pathname])
@@ -107,6 +109,17 @@ function EditorialLayout({ children }: { children: ReactNode }) {
 
 function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
+
+  // The admin has its own chrome; it never renders the storefront header/footer.
+  if (pathname.startsWith('/admin')) {
+    return (
+      <>
+        <SeoHead />
+        {children}
+      </>
+    )
+  }
+
   return (
     <>
       <SeoHead />
@@ -138,6 +151,14 @@ export default function App() {
               element={
                 <Suspense fallback={<p className="text-muted-foreground">بنحمّل…</p>}>
                   <CheckoutPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin/*"
+              element={
+                <Suspense fallback={<p className="p-8 text-muted-foreground">بنحمّل…</p>}>
+                  <AdminPage />
                 </Suspense>
               }
             />

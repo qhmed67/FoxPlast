@@ -60,8 +60,8 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 
 ## Phase 4 — Admin
 
-- [ ] Supabase Auth (email+password), `admins` table, `is_admin()`, route guard, code-split `/admin`.
-- [ ] Orders: list, filters, detail (proof viewer via signed URL), status actions, notification retry.
+- [x] Supabase Auth (email+password), `admins` table, `is_admin()`, route guard, code-split `/admin`. Username login maps to `<username>@admin.foxplast.app`; full emails also work.
+- [~] Orders: list, filters, detail (proof viewer via signed URL), status actions. Notification retry still pending.
 - [ ] Catalog CRUD with client-side image resize to 3 widths; price tiers editor.
 - [ ] Portfolio manager with the `approved` toggle.
 - [ ] Config editor (payment methods, deposit %, WhatsApp number, expiry hours, manual-quote flag).
