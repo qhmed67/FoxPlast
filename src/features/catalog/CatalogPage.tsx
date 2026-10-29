@@ -64,7 +64,7 @@ export default function CatalogPage() {
         </div>
       </section>
 
-      <div className="border-b border-sand bg-bone lg:sticky lg:top-[73px] lg:z-20 lg:bg-bone/95 lg:backdrop-blur">
+      <div className="border-b border-sand bg-bone lg:sticky lg:top-[104px] lg:z-20 lg:bg-bone/95 lg:backdrop-blur">
         <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:gap-8">
           <div className="flex flex-wrap gap-x-6 gap-y-2" role="group" aria-label="التصنيف">
             <FilterButton active={category === 'all'} onClick={() => setCategory('all')}>

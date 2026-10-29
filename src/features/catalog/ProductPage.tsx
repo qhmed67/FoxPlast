@@ -109,7 +109,7 @@ export default function ProductPage() {
 
       <div className="mx-auto grid max-w-[1400px] gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-12">
         {/* Gallery */}
-        <div className="lg:sticky lg:top-[105px] lg:self-start">
+        <div className="lg:sticky lg:top-[136px] lg:self-start">
           <div className="relative aspect-[4/5] overflow-hidden bg-[#EFEAE1]">
             {image ? (
               <img
