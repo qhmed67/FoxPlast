@@ -33,9 +33,9 @@ export default function HomePage() {
       <section className="relative isolate overflow-hidden bg-[#EBE4DC]">
         <h1 className="sr-only">شنط دعاية مطبوعة من Fox Plast — الإسكندرية</h1>
         <picture>
-          <source media="(min-width: 768px)" srcSet="/products/hero-signatures.jpg" />
+          <source media="(min-width: 768px)" srcSet="/products/hero-signatures-2.jpg" />
           <img
-            src="/products/hero-signatures-mobile.jpg"
+            src="/products/hero-signatures-mobile-2.jpg"
             alt="شنط دعاية مطبوعة بشعارات براندات من Fox Plast"
             width={1600}
             height={600}
