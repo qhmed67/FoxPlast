@@ -64,16 +64,16 @@ export function EditorialHeader() {
               <path d="M6.6 7.6h10.8l-1 11.9a1.6 1.6 0 0 1-1.6 1.5H9.2a1.6 1.6 0 0 1-1.6-1.5l-1-11.9Z" />
               <path d="M9.4 7.6V6.2a2.6 2.6 0 0 1 5.2 0v1.4" />
             </svg>
-            {count > 0 && (
-              <span
-                key={count}
-                className="cart-count absolute -start-1.5 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full border border-coal/15 bg-white px-1 text-[9px] font-semibold leading-none text-coal"
-                dir="ltr"
-              >
-                {count}
-              </span>
-            )}
           </span>
+          {count > 0 && (
+            <span
+              key={count}
+              className="cart-count grid h-[18px] min-w-[18px] place-items-center rounded-full bg-coal px-1 text-[10px] font-semibold leading-none tabular-nums text-bone"
+              dir="ltr"
+            >
+              {count}
+            </span>
+          )}
           <span className="hidden text-xs font-medium tracking-wide sm:inline">السلة</span>
         </Link>
       </div>
