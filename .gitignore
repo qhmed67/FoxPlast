@@ -31,3 +31,6 @@ supabase/.temp/
 serve.log
 keep.log
 dev.log
+
+# Supabase CLI binary downloaded for deploys
+supabase-cli
