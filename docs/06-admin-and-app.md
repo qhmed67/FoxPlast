@@ -30,6 +30,29 @@ app is a convenience layer on top, not a separate backend. Recommended order of 
 
 UI rules: dense and calm, no decorative motion (`03` §2), big touch targets, works one-handed on a phone.
 
+### Bootstrap the first admin (remote)
+
+The panel is live at `/admin`, but it needs a Supabase Auth user and a matching
+`admins` row. Both are one-time dashboard steps (service role stays out of the browser):
+
+1. **Authentication → Users → Add user**: email `<username>@admin.foxplast.app`
+   (for example `ahmed@admin.foxplast.app`), set the password, confirm the user.
+2. **SQL editor** — link that user to the admin table:
+
+   ```sql
+   insert into public.admins (user_id, name)
+   select id, 'أحمد' from auth.users
+    where email = 'ahmed@admin.foxplast.app'
+   on conflict (user_id) do nothing;
+   ```
+
+3. Open `/admin` and sign in with the username (`ahmed`) and the password.
+   The email itself also works in the username field.
+
+Status changes go through `public.admin_set_order_status` (`0003_admin.sql`), which
+checks `is_admin()`, writes `order_events` with the admin's name, and reuses
+`apply_order_transition` so the UI can never step outside the state machine.
+
 **Backup plan the owner mentioned** (a separate React admin app that pushes content to the site)
 is supported by design: the admin talks only to Supabase (RLS + `is_admin()`), so the same code can be
 moved to its own app (`apps/admin`) with no backend change. Start inside the same repo to avoid two deploys.
