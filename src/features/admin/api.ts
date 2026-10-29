@@ -112,7 +112,7 @@ export function orderStatusMessage(
   const money = (piasters: number) => `${(piasters / 100).toLocaleString('en-US')} ج.م`
 
   return [
-    `مرحباً ${order.customer_name} 👋`,
+    `أهلاً ${order.customer_name}،`,
     '',
     `بخصوص طلبك *${order.code}* من Fox Plast:`,
     `الحالة الحالية: *${STATUS_LABELS[status]}*`,

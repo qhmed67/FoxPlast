@@ -36,21 +36,27 @@ export function EditorialHeader() {
         </div>
       </div>
 
-      <div className="relative mx-auto flex h-16 max-w-[1400px] items-center gap-5 px-4">
+      {/* Holds the lockup and the bar, so the bar below can be its own row on
+          narrow screens without the absolutely-placed brand riding into it. */}
+      <div className="relative mx-auto max-w-[1400px] px-4">
         {/* Centred brand lockup, like the reference; absolutely placed so the
             uneven side widths never push it off-centre. */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute left-1/2 top-2 -translate-x-1/2 lg:top-1/2 lg:-translate-y-1/2">
           <BrandLogo />
         </div>
-        <nav aria-label="التنقل الرئيسي" className="hidden flex-1 gap-7 text-xs font-medium tracking-wide lg:flex">
+        <div className="mx-auto flex w-full flex-col gap-y-1 pt-14 lg:h-16 lg:flex-row lg:items-center lg:gap-x-5 lg:pt-0">
+        <nav
+          aria-label="التنقل الرئيسي"
+          className="mobile-nav-row order-last text-[11px] font-medium lg:order-none lg:flex-1 lg:text-xs lg:tracking-wide lg:pe-[18rem]"
+        >
           {NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/'}
+              end={/^\/[^/]*$/.test(item.to)}
               className={({ isActive }) =>
-                `editorial-underline transition-colors ${
-                  isActive ? 'nav-is-active text-coal' : 'text-coal/70 hover:text-coal'
+                `mobile-nav-link editorial-underline transition-colors ${
+                  isActive ? 'is-active' : ''
                 }`
               }
             >
@@ -61,7 +67,7 @@ export function EditorialHeader() {
         <Link
           to="/basket"
           aria-label={count > 0 ? `السلة، ${count} منتج` : 'السلة'}
-          className="cart-action group relative -me-2 ms-auto flex h-11 items-center gap-2.5 rounded-full px-3 text-coal transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal"
+          className="cart-action group absolute end-4 top-2.5 flex h-11 items-center gap-2.5 rounded-full px-3 text-coal transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coal lg:static lg:ms-auto"
         >
           <span className="relative grid place-items-center">
             <svg
@@ -89,24 +95,9 @@ export function EditorialHeader() {
           )}
           <span className="hidden text-xs font-medium tracking-wide sm:inline">السلة</span>
         </Link>
+        </div>
       </div>
 
-      <nav
-        aria-label="أقسام الموقع"
-        dir="rtl"
-        className="mobile-nav-row border-t border-sand py-2 text-[11px] font-medium text-coal/75 md:hidden"
-      >
-        {NAV.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={/^\/[^/]*$/.test(item.to)}
-            className={({ isActive }) => `mobile-nav-link ${isActive ? 'is-active' : ''}`}
-          >
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
     </header>
   )
 }
