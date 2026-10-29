@@ -32,14 +32,17 @@ export default function HomePage() {
           itself carries the message, no overlay copy or crop. */}
       <section className="relative isolate overflow-hidden bg-[#EBE4DC]">
         <h1 className="sr-only">شنط دعاية مطبوعة من Fox Plast — الإسكندرية</h1>
-        <img
-          src="/products/hero-signatures.jpg"
-          alt="شنط دعاية مطبوعة بشعارات براندات من Fox Plast"
-          width={1600}
-          height={600}
-          className="block h-auto w-full"
-          fetchPriority="high"
-        />
+        <picture>
+          <source media="(min-width: 768px)" srcSet="/products/hero-signatures.jpg" />
+          <img
+            src="/products/hero-signatures-mobile.jpg"
+            alt="شنط دعاية مطبوعة بشعارات براندات من Fox Plast"
+            width={1600}
+            height={600}
+            className="block h-auto w-full"
+            fetchPriority="high"
+          />
+        </picture>
       </section>
 
       {/* Ticker */}
