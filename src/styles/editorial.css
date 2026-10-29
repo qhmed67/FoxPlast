@@ -58,11 +58,12 @@
 }
 
 .editorial-underline:hover::after,
-.editorial-underline.nav-is-active::after,
 .editorial-underline[aria-pressed='true']::after {
   transform: scaleX(1);
 }
 
+/* One nav for every width. Below lg it is a scrollable chip row under the bar;
+   at lg the same links space out inline, so the page never renders two. */
 .mobile-nav-row {
   display: flex;
   align-items: center;
@@ -77,8 +78,8 @@
   display: none;
 }
 
-/* Mobile destination chips. The active chip is visibly filled, and a press
-   gives a small physical response so the current section never feels static. */
+/* The active destination is visibly filled, and a press gives a small physical
+   response so the current section never feels static. */
 .mobile-nav-link {
   display: inline-flex;
   min-height: 40px;
@@ -117,6 +118,51 @@
   to {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* From lg up the row is inline text again: no pill, no scroll, no padding. */
+@media (min-width: 64rem) {
+  .mobile-nav-row {
+    gap: 1.75rem;
+    overflow: visible;
+    padding-inline: 0;
+  }
+
+  .mobile-nav-link {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    color: color-mix(in srgb, var(--coal) 70%, transparent);
+    animation: none;
+  }
+
+  .mobile-nav-link:hover {
+    color: var(--coal);
+  }
+
+  .mobile-nav-link.is-active {
+    background: transparent;
+    color: var(--coal);
+    animation: none;
+  }
+
+  /* The underline is the desktop active marker, the pill is the mobile one. */
+  .mobile-nav-link.editorial-underline::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -4px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: inline-start;
+    transition: transform 220ms ease;
+  }
+
+  .mobile-nav-link.editorial-underline:hover::after,
+  .mobile-nav-link.editorial-underline.is-active::after {
+    transform: scaleX(1);
   }
 }
 
