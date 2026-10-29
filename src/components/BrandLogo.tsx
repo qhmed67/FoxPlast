@@ -1,18 +1,26 @@
 import { Link } from 'react-router'
 
-// TODO(asset): replace the square fox-mark with `logo-horizontal.png`
-// (fox head + navy "FOX" + orange "PLAST") when the owner supplies it.
-// Until then the supplied mark sits on a light chip, per DESIGN.md §9.
-export function BrandMark({ size = 40 }: { size?: number }) {
+// The owner's final mark: a solid fox head, supplied as artwork. The PNG is
+// trimmed to its ink and transparent, so it can sit on any background; the
+// `paper` tone inverts it for the dark footer without a second file.
+const MARK_RATIO = 424 / 512
+
+export function BrandMark({
+  size = 40,
+  tone = 'ink',
+}: {
+  size?: number
+  tone?: 'ink' | 'paper'
+}) {
   return (
     <img
       src="/brand/logo-fox-mark.png"
       alt=""
-      width={size}
+      width={Math.round(size * MARK_RATIO)}
       height={size}
       decoding="async"
-      className="rounded-full bg-kraft-50 object-cover ring-1 ring-border"
-      style={{ width: size, height: size }}
+      className={`object-contain ${tone === 'paper' ? 'invert' : ''}`}
+      style={{ width: Math.round(size * MARK_RATIO), height: size }}
     />
   )
 }

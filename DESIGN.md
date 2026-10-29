@@ -192,7 +192,9 @@ K-means (PIL median-cut, 12 colors) on the two supplied images. **`status` stays
 so the brand navy/orange are still the eye-sampled values in §2.
 
 Source files (user-supplied, non-canonical names; see TODO(asset)):
-- `public/brand/logo.png` — 340×340, the fox-mark gradient avatar.
+- `public/brand/logo-fox-mark.png` — final mark (2026-10-29): solid black fox head on
+  transparency, trimmed to the ink. `BrandMark` tints it with `invert` on dark surfaces.
+- `public/brand/logo.png` — 340×340, the earlier fox-mark gradient avatar (superseded).
 - `public/brand/brand logo and some products.png` — 1224×1285, product/portfolio grid.
 
 Dominant colors extracted:
