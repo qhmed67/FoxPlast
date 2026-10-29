@@ -22,3 +22,6 @@ supabase/.temp/
 
 # Any local secret file used for deploys
 .secrets.local
+
+# Playwright browsers installed locally (no system cache available)
+.pw-browsers/

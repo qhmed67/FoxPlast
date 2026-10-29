@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, NavLink } from 'react-router'
 import { BrandLogo } from '../BrandLogo'
 import { useBasket } from '../../features/basket/context'
 import { usePublicConfig, whatsappLink } from '../../features/config/api'
@@ -40,9 +40,18 @@ export function EditorialHeader() {
         </div>
         <nav aria-label="التنقل الرئيسي" className="hidden flex-1 gap-7 text-xs font-medium tracking-wide lg:flex">
           {NAV.map((item) => (
-            <Link key={item.to} to={item.to} className="editorial-underline text-coal/80 hover:text-coal">
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive }) =>
+                `editorial-underline transition-colors ${
+                  isActive ? 'nav-is-active text-coal' : 'text-coal/70 hover:text-coal'
+                }`
+              }
+            >
               {item.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
         <Link
@@ -79,13 +88,18 @@ export function EditorialHeader() {
       </div>
 
       <nav
-        aria-label="تنقل الموبايل"
-        className="flex gap-5 overflow-x-auto border-t border-sand px-4 py-2 text-[11px] font-medium text-coal/75 md:hidden"
+        aria-label="أقسام الموقع"
+        className="flex items-center gap-1.5 overflow-x-auto border-t border-sand px-3 py-2 text-[11px] font-medium text-coal/75 [scrollbar-width:none] md:hidden"
       >
         {NAV.map((item) => (
-          <Link key={item.to} to={item.to} className="whitespace-nowrap">
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === '/'}
+            className={({ isActive }) => `mobile-nav-link ${isActive ? 'is-active' : ''}`}
+          >
             {item.label}
-          </Link>
+          </NavLink>
         ))}
       </nav>
     </header>
