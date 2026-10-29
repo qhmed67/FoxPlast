@@ -41,20 +41,35 @@ and stripping spaces, dashes and a leading `+20`/`0020`. Show the normalized num
 Setup: create the bot with BotFather, add it to a private staff group (or DM each staff member),
 register the webhook with `secret_token`, store the allowlist in `telegram_staff`.
 
-**New order message** (HTML parse mode, user text escaped):
+**Access gate.** Nobody sees orders without the team password. `/start` only asks for it;
+any other plain text is treated as an attempt. A correct entry activates the account in
+`telegram_staff` (an existing admin row keeps its role); wrong entries are limited to
+5 per 10 minutes per Telegram account and counted in `rate_limits` with key
+`tg-access:<id>`. If `TELEGRAM_ACCESS_PASSWORD` is unset the gate stays closed.
+
+**New order message** (HTML parse mode, user text escaped; times are formatted in
+`Africa/Cairo`, never the raw ISO string):
 
 ```
-🧾 طلب جديد  FP-7K3M9Q
-👤 {name} — {phone}
+🧾 طلب جديد
+FP-7K3M9Q
+
+👤 العميل
+{name}
+{phone}
 📍 {governorate}
-────────────
-{qty} × {product} ({color}/{size})
-...
-────────────
-الإجمالي: {subtotal} ج.م
-العربون المطلوب: {deposit} ج.م
-🕒 {created_at}
+🏠 {address}          (quote block)
+
+📦 الأصناف
+• {qty}× {product} ({color})
+
+الإجمالي  {subtotal} ج.م
+العربون المطلوب  {deposit} ج.م
+
+🕒 {created_at, Cairo time}
 ```
+
+Buttons: `💬 تواصل مع العميل` (wa.me with a prefilled message) and `🦊 لوحة الإدارة`.
 
 **After a proof is uploaded:** `sendPhoto` of the screenshot (via a short-lived signed URL or bytes)
 with caption: code, claimed amount, sender hint. Inline buttons: `✅ تأكيد الدفع` · `❌ رفض`.
@@ -62,7 +77,7 @@ After confirm: the same message is edited to show who confirmed and when, and th
 (`بدء التجهيز` → `جاهز` → `تم التسليم`).
 
 Rules:
-- **Bootstrap:** the first `/start` sent to the bot registers that Telegram account in `telegram_staff` (role `admin`, active). New-order messages go to every active row; `TELEGRAM_STAFF_CHAT_ID` is only a manual fallback. Deploy the function with `verify_jwt = false` — the webhook secret header is the auth.
+- **Bootstrap:** `/start` asks for the team password; only a correct entry registers that Telegram account in `telegram_staff` (role `staff`, or the role already stored). New-order messages go to every active row; `TELEGRAM_STAFF_CHAT_ID` is only a manual fallback. Deploy the function with `verify_jwt = false` — the webhook secret header is the auth.
 - `callback_data` is ≤ 64 bytes: `o:<orderId first 8 chars>:<action>` and the function resolves the full id.
 - Always `answerCallbackQuery`; handle Telegram retries (idempotent).
 - Reject updates from users not in `telegram_staff` and answer with a neutral message.

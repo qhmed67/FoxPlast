@@ -233,7 +233,7 @@ Function secrets (dashboard → Edge Functions → Secrets, or `supabase secrets
 | `TELEGRAM_BOT_TOKEN` | both | from BotFather |
 | `TELEGRAM_STAFF_CHAT_ID` | `create-order` | comma-separated chat ids for new-order messages |
 | `TELEGRAM_WEBHOOK_SECRET` | `telegram-webhook` | 1–256 chars, `A-Z a-z 0-9 _ -` only |
-| `TELEGRAM_STAFF_IDS` | `telegram-webhook` | bootstrap allowlist before `telegram_staff` is seeded |
+| `TELEGRAM_ACCESS_PASSWORD` | `telegram-webhook` | team password; without it the bot stays closed |
 | `IP_HASH_SALT` | `create-order` | random string; keeps IP hashes non-reversible |
 | `TURNSTILE_SECRET` | `create-order` | optional; verification is skipped while unset |
 | `ALLOWED_ORIGINS` | both | optional; comma-separated origins, defaults to any in dev |
@@ -265,9 +265,10 @@ curl -s "https://api.telegram.org/bot<token>/getWebhookInfo"
 | Functions | `create-order`, `telegram-webhook` (project ref above) |
 | Webhook | `https://uuvqaklyhflxuqggdnxd.supabase.co/functions/v1/telegram-webhook` |
 | Public env | `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_ANON_KEY`, `VITE_APP_VERSION` set for production/preview/development |
-| Function secrets | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `IP_HASH_SALT`, `ALLOWED_ORIGINS` |
+| Function secrets | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET`, `TELEGRAM_ACCESS_PASSWORD`, `IP_HASH_SALT`, `ALLOWED_ORIGINS` |
 
-Still unset on purpose: `TELEGRAM_STAFF_CHAT_ID`, `TELEGRAM_STAFF_IDS` (need the owner's chat id),
+Still unset on purpose: `TELEGRAM_STAFF_CHAT_ID`, `TELEGRAM_STAFF_IDS` (optional; the
+`telegram_staff` allowlist is the normal path),
 `TURNSTILE_SECRET` / `VITE_TURNSTILE_SITE_KEY` (no Cloudflare account). `app_config` still has
 placeholder `whatsapp_number` and no `payment_methods`; replace both in Phase 7.
 
