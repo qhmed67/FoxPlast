@@ -26,7 +26,11 @@ const contactSchema = z.object({
     .trim()
     .refine((value) => normalizePhone(value) !== null, 'اكتب رقم موبايل مصري صحيح'),
   governorate: z.string().min(1, 'اختار المحافظة'),
-  address: z.string().trim().max(300, 'العنوان طويل').optional(),
+  address: z
+    .string()
+    .trim()
+    .min(5, 'اكتب العنوان بالتفصيل: الشارع ورقم المبنى')
+    .max(300, 'العنوان طويل'),
   notes: z.string().trim().max(500, 'الملاحظات طويلة').optional(),
   website: z.string().max(0).optional(),
 })
@@ -37,7 +41,7 @@ type Contact = {
   name: string
   phone: string
   governorate: string
-  address?: string
+  address: string
   notes?: string
 }
 
@@ -114,7 +118,7 @@ export default function CheckoutPage() {
       name: values.name.trim(),
       phone,
       governorate: values.governorate,
-      address: values.address?.trim() || undefined,
+      address: values.address.trim(),
       notes: values.notes?.trim() || undefined,
     })
     setStep(3)
@@ -342,14 +346,23 @@ export default function CheckoutPage() {
 
             <div>
               <label htmlFor="address" className="mb-1 block text-sm font-semibold">
-                العنوان <span className="text-muted-foreground">(اختياري)</span>
+                العنوان{' '}
+                <span className="text-xs font-normal text-muted-foreground">
+                  (الشارع، رقم المبنى، علامة مميزة)
+                </span>
               </label>
               <input
                 id="address"
                 {...form.register('address')}
                 autoComplete="street-address"
+                required
                 className="h-12 w-full rounded-md border border-border bg-background px-3"
               />
+              {form.formState.errors.address && (
+                <p role="alert" className="mt-1 text-sm text-destructive">
+                  {form.formState.errors.address.message}
+                </p>
+              )}
             </div>
 
             <div>

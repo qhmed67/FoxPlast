@@ -33,6 +33,10 @@ test('checkout validates contact data and previews the ticket', async ({ page },
 
   await page.getByLabel('الموبايل').fill('+20 100 123 4567')
   await page.getByRole('button', { name: 'التالي' }).click()
+  await expect(page.getByText('اكتب العنوان بالتفصيل')).toBeVisible()
+
+  await page.locator('#address').fill('شارع 45، العطارين، أمام مسجد النور')
+  await page.getByRole('button', { name: 'التالي' }).click()
 
   await expect(page.getByText('العربون المطلوب')).toBeVisible()
   await expect(page.getByText('18000 ج.م').first()).toBeVisible()
