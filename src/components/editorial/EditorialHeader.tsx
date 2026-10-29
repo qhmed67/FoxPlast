@@ -32,9 +32,13 @@ export function EditorialHeader() {
         </div>
       </div>
 
-      <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-5 px-4">
-        <BrandLogo />
-        <nav aria-label="التنقل الرئيسي" className="ms-4 hidden flex-1 gap-7 text-xs font-medium tracking-wide md:flex">
+      <div className="relative mx-auto flex h-16 max-w-[1400px] items-center gap-5 px-4">
+        {/* Centred brand lockup, like the reference; absolutely placed so the
+            uneven side widths never push it off-centre. */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <BrandLogo />
+        </div>
+        <nav aria-label="التنقل الرئيسي" className="hidden flex-1 gap-7 text-xs font-medium tracking-wide lg:flex">
           {NAV.map((item) => (
             <Link key={item.to} to={item.to} className="editorial-underline text-coal/80 hover:text-coal">
               {item.label}
