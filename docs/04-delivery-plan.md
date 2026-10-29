@@ -15,7 +15,7 @@ check when UI changed. If a task needs paid anything, stop and propose a free op
 - [x] Add `src/styles/{globals,theme,morph,motion}.css`; copy `morph.css` unchanged (628 lines); write `theme.css` from `/DESIGN.md` §2 mapping.
 - [x] Self-hosted fonts via `@fontsource`: Readex Pro 600/700, IBM Plex Sans Arabic 400/500/600, IBM Plex Mono 500.
 - [x] `<html lang="ar" dir="rtl">`, base typography, focus ring, reduced-motion base.
-- [x] **Brand extraction (partial):** extracted palettes from `logo.png` (fox-mark) and `brand logo and some products.png` (product grid) via k-means; recorded in `DESIGN.md` §12 and D10. `status` stays `provisional` — horizontal logo (`logo-horizontal.png`) missing, so navy/orange not finalized. Vectorize + knockout variant pending (potrace/vtracer not installed). See TODO(asset).
+- [x] **Brand extraction (partial):** extracted palettes from `logo.png` (fox-mark) and `brand logo and some products.png` (product grid) via k-means; recorded in `DESIGN.md` §12 and D10. Final mark supplied 2026-10-29 (solid black fox head, see `BrandMark`); horizontal lockup is still `TODO(asset)`, so navy/orange remain eye-sampled.
 - [x] Playwright config: mobile RTL, reduced-motion, desktop projects; smoke test passes in all 3.
 - [x] CI workflow: lint, typecheck, build, e2e on PR.
 - [x] Check current free-tier limits + Vercel commercial clause; recorded as D8/D9.

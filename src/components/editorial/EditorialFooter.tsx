@@ -13,7 +13,7 @@ export function EditorialFooter() {
       <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
-            <BrandMark size={34} />
+            <BrandMark size={34} tone="paper" />
             <span className="text-lg font-bold" style={{ fontFamily: 'Readex Pro, sans-serif' }}>
               Fox Plast
             </span>

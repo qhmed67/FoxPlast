@@ -50,7 +50,7 @@ tests/e2e/         Playwright specs
 | File name | What it is |
 | --- | --- |
 | `logo-horizontal.png` | Fox head + navy "FOX" + orange "PLAST" on transparent/white |
-| `logo-fox-mark.png` | Orange/red fox with "FOX PLAST" on the teal→green gradient (social avatar) |
+| `logo-fox-mark.png` | Final mark (2026-10-29): solid black fox head, trimmed and transparent; inverted in dark sections |
 | `poster-storage-bag.png` | "شنطة الخزين" poster (70×60×20, four colors) |
 | `ref-grid-1.png`, `ref-grid-2.png` | Screenshots of the product/portfolio grids |
 
