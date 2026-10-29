@@ -32,6 +32,7 @@ async function reachReview(page: import('@playwright/test').Page) {
   await page.getByLabel('الاسم').fill('أحمد')
   await page.getByLabel('الموبايل').fill('01001234567')
   await page.getByLabel('المحافظة').selectOption('القاهرة')
+  await page.locator('#address').fill('شارع 45، العطارين، أمام مسجد النور')
   await page.getByRole('button', { name: 'التالي' }).click()
   await expect(page.getByText('معاينة')).toBeVisible()
 }

@@ -11,6 +11,7 @@ export type NotifyOrder = {
   name: string
   phone: string
   governorate: string
+  address: string
   items: NotifyItem[]
   subtotalPiasters: number
   depositPiasters: number
@@ -19,6 +20,12 @@ export type NotifyOrder = {
 
 function money(piasters: number): string {
   return `${(piasters / 100).toLocaleString('en-US')} ج.م`
+}
+
+/** Egyptian mobile (01xxxxxxxxx) → international digits for wa.me. */
+function whatsappNumber(phone: string): string {
+  const digits = phone.replace(/\D/g, '')
+  return digits.startsWith('20') ? digits : `20${digits.replace(/^0/, '')}`
 }
 
 type TelegramResult<T> = { ok: true; result: T } | { ok: false; description: string }
@@ -82,6 +89,7 @@ export async function notifyNewOrder(
     `🧾 طلب جديد  <b>${escapeHtml(order.code)}</b>`,
     `👤 ${escapeHtml(order.name)} — <code>${escapeHtml(order.phone)}</code>`,
     `📍 ${escapeHtml(order.governorate)}`,
+    `🏠 ${escapeHtml(order.address)}`,
     '────────────',
     ...order.items.map(
       (item) =>
@@ -106,6 +114,18 @@ export async function notifyNewOrder(
             text,
             parse_mode: 'HTML',
             disable_web_page_preview: true,
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '💬 تواصل مع العميل',
+                    url: `https://wa.me/${whatsappNumber(order.phone)}?text=${encodeURIComponent(
+                      `مرحباً ${order.name}، بخصوص طلبك ${order.code} من Fox Plast — عايزين نأكد الدفع والعنوان.`,
+                    )}`,
+                  },
+                ],
+              ],
+            },
           }),
           signal: AbortSignal.timeout(5_000),
         })
