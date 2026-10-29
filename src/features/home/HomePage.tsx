@@ -28,49 +28,65 @@ export default function HomePage() {
 
   return (
     <div className="bg-bone text-coal">
-      {/* Hero */}
-      <section className="editorial-hero relative overflow-hidden bg-coal text-bone">
-        <div className="relative z-10 mx-auto grid max-w-[1400px] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-20">
-          <div className="order-2 lg:order-1">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-bone/45">
+      {/* Hero — full-bleed campaign photo, text over the plain side on desktop. */}
+      <section className="relative isolate overflow-hidden bg-[#F3ECE2] text-coal">
+        {/* Mobile: photo band, then the copy below it. */}
+        <div className="relative md:hidden">
+          <img
+            src="/products/hero-bags.jpg"
+            alt="شنط دعاية مطبوعة بشعارات براندات من Fox Plast"
+            className="h-[42svh] min-h-[300px] w-full object-contain object-center md:h-[46svh]"
+            fetchPriority="high"
+          />
+        </div>
+
+        {/* Tablet: the wide shot as a band. */}
+        <img
+          src="/products/hero-wide.jpg"
+          alt=""
+          aria-hidden
+          className="hidden h-[46svh] w-full object-cover object-center md:block xl:hidden"
+        />
+
+        {/* Desktop: the wide shot fills the section. */}
+        <img
+          src="/products/hero-wide.jpg"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 hidden h-full w-full object-cover object-center xl:block"
+        />
+        <div
+          className="absolute inset-y-0 left-0 hidden w-[56%] bg-gradient-to-r from-[#F5EEE4] via-[#F5EEE4]/80 to-transparent xl:block"
+          aria-hidden
+        />
+
+        <div className="relative mx-auto max-w-[1400px] px-4 pb-12 pt-8 sm:px-6 xl:flex xl:min-h-[clamp(420px,37.5vw,660px)] xl:items-center xl:justify-end xl:py-0">
+          <div className="w-full max-w-[24rem] xl:max-w-[26rem]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-kraft-700">
               Fox Plast — Alexandria
             </p>
-            <h1 className="mt-5 text-[clamp(2.9rem,8vw,6.5rem)] font-bold leading-[0.98] tracking-[-0.03em]">
+            <h1 className="mt-4 text-[clamp(2.2rem,5.4vw,4.2rem)] font-bold leading-[1.02] tracking-[-0.03em]">
               شنط بتحمل
               <br />
               <span className="text-orange-500">اسمك.</span>
             </h1>
-            <p className="mt-6 max-w-[46ch] text-sm leading-8 text-bone/65 sm:text-base">
+            <p className="mt-4 max-w-[44ch] text-sm leading-7 text-coal/70 sm:text-base">
               من شنط الدعاية القماش والكرافت، لشنط الخزين القوية. بنصنع الخامة، بنطبع اللوجو،
               وبنسلّم لبراندات بتكبر.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 to="/catalog"
-                className="inline-flex min-h-12 items-center bg-bone px-7 text-xs font-semibold uppercase tracking-[0.14em] text-coal transition-colors hover:bg-white"
+                className="inline-flex min-h-12 items-center bg-coal px-6 text-xs font-semibold uppercase tracking-[0.14em] text-bone transition-colors hover:bg-black"
               >
                 تسوّق المنتجات
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex min-h-12 items-center border border-white/25 px-7 text-xs font-semibold uppercase tracking-[0.14em] text-bone transition-colors hover:border-bone"
+                className="inline-flex min-h-12 items-center border border-coal/30 px-6 text-xs font-semibold uppercase tracking-[0.14em] text-coal transition-colors hover:border-coal"
               >
                 اطلب عرض سعر
               </Link>
-            </div>
-          </div>
-
-          <div className="order-1 lg:order-2">
-            <div className="relative overflow-hidden bg-[#DCD3C4]">
-              <img
-                src="/products/hero-print.jpg"
-                alt="شنط دعاية مطبوعة بشعارات براندات من Fox Plast"
-                className="aspect-[4/3] w-full object-cover lg:aspect-[5/4]"
-                fetchPriority="high"
-              />
-              <span className="absolute bottom-4 start-4 bg-bone px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-coal">
-                شنط دعاية مطبوعة
-              </span>
             </div>
           </div>
         </div>
